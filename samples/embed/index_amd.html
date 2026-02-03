@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Storm Library - AMD Test Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+</head>
+<body>
+
+<div id="storm_player_0">
+    <h1>Storm Library AMD - TestPage</h1>
+    <div id="videoContainer"></div>
+</div>
+
+<script>
+
+    const config = {
+        stream: {
+            serverList: [
+                {
+                    host: "127.0.0.1",
+                    application:"live",
+                    port: 8080,
+                    ssl: false
+                },
+            ],
+            streamKey:"test",
+        },
+        settings: {
+            autoStart: true,
+            video: {
+                scalingMode: "letterbox",
+                containerID: "videoContainer",
+                width:"1280px",
+                height:"720px",
+            },
+        }
+    }
+
+    requirejs(['../../../dist/amd/index'], function (storm) {
+
+        const stormInstance = new storm.create(config);
+        stormInstance.initialize();
+
+    });
+
+</script>
+
+</body>
+</html>

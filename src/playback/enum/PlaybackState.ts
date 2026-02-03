@@ -1,0 +1,9 @@
+export enum PlaybackState {
+    INITIALIZED ="INITIALIZED",
+    PLAYING = "PLAYING",
+    BUFFERING="BUFFERING",
+    PAUSED ="PAUSED",
+    STOPPED="STOPPED",
+    UNKNOWN="UNKNOWN",
+    ERROR="ERROR"
+}

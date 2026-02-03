@@ -1,0 +1,133 @@
+"Storm Streaming Server" software license
+
+§ 1. Introduction
+1)	The following software license terms are a binding agreement between you, an individual user at least 18 years of age, or alternatively a single legal entity (hereinafter referred to as Licensee), and Web-Anatomy s.c. based in Poland (hereinafter referred to as Licensor).
+2)	By downloading, installing, or otherwise accessing Storm Streaming Server or Storm Player software, you consent to these terms and conditions.
+3)	If you purchase the software for the benefit of a legal entity (such as a company, institution), you declare that you are authorized to bind that entity under this License Agreement, and in the context of this agreement, thats entity will be called the Licensee.
+
+§ 2. Definitions
+Terms used in this agreement have the following meanings:
+1)	Agreement - means this license agreement and all its terms;
+2)	Software - means software developed and distributed by the Licensor under the names Storm Steaming Server and Storm Player;
+3)	Instance - means a single, unique installation of the Software on the Server;
+4)	Server - means a single, physical PC / Mac or equivalent computer, supported by a unique copy of the operating system. The term can also mean a virtual computer running on a physical Server;
+5)	Service period - means the period for which the rights to use the Software have been purchased;
+6)	Technical support - means providing technical support services by the Licensor in relation to the Software;
+7)	Update - means a newer version of the Software containing improvements in its functioning or new functionality;
+8)	License Key - the alphanumeric code required to run the Software and provided by the Licensor;
+9)	Technical documentation - means materials in written and graphic form describing the operation and functionality of the Software;
+10)	Program error - indicates a fault in the operation of the Program;
+11)	Source Code - means a sequence of instructions written in a programming language describing the principles of operation of the application;
+12)	Minimum requirements - means the minimum parameters that must be met by the Server to be able to properly operate the Software;
+13)	Example - a fragment of a program, script, graphic element illustrating the functionality of the Software;
+14)	Materials - input or output data in the form of binary strings representing multimedia content such as video, audio or other computer data.
+15)	Stream - Material in the form of an audio / video stream delivered in real time to the Software through external software or service;
+16)	Viewer - User who is the recipient of the Materials;
+
+
+§ 3. Rights granted
+1)	The software is licensed - not sold. The agreement does not transfer or change in any form the proprietary copyrights that absolutely belong to the Licensor.
+2)	Pursuant to this agreement and its terms, the Licensor grants the Licensee a worldwide, limited, non-exclusive, non-sublicensable, non-transferable license to use the Software.
+3)	The source code of the Software, excluding the Examples, is not provided to the Licensee in any way and is the secret of the Licensor.
+4)	The examples provided by the Licensor can be copied, installed, modified, used and integrated without any restrictions.
+
+
+§ 4. Restrictions
+1)	Taking into account the above restrictions, it is also prohibited to:
+a.	Sale, leasing, rental, distribution of part or all of the Software and / or License Keys in any form, including in particular the creation of products and services competitive for the Licensor.
+b.	Modifying the Software or creating your own IT solutions based on the analysis of its operation.
+c.	Use of the Software for transmission, reproduction, storage or sharing of Materials for which the Licensee does not have the appropriate license rights.
+d.	Use of Materials containing unlawful content, including in particular pedophile, criminal content or such inciting hatred on the basis of racial or nationality, etc.
+e.	Decompile, reverse engineer some or all of the Software to obtain the Source Code or its algorithms.
+f.	Remove, modify, cover or obfuscate the Licensee's trademarks in any element of the Software.
+g.	Offering the Software Technical Support service to other entities without the Licensor's written consent.
+h.	Make any changes to the Agreement without the Licensor's consent.
+
+
+§ 5. License types
+1)	The software is distributed in the following versions:
+a.	Free with limited functionality,
+b.	Commercial in the subscription model, without limitations in functionalities,
+c.	Commercial with a one-time fee with no restrictions in functionality
+2)	If you choose a free license, the following terms of use for the Software shall apply:
+a.	The license is free.
+b.	The license is limited to a single Instance. It is forbidden to install the Software in this version on more than one Server. The above is possible only after obtaining the written consent of the Licensor.
+c.	The license will automatically expire after 30 days. After this period, it may be resumed for the same period.
+d.	The license cannot be used commercially. It is only permitted to be used for integration with other software, websites and tests.
+e.	The license does not authorize the use of the Software Instance in the "Storm Streaming Marketplace" solution.
+f.	The software allows you to create only up to 5 parallel Streams and service a total of 10 Viewers.
+g.	The software may not offer all the functionality of the commercial version.
+3)	If you choose a commercial license in the subscription model, the following terms of use for the Software apply:
+a.	The license is payable. The fee is charged in the form of a subscription fee in advance for the period of use in a monthly or annual period.
+b.	The license is granted for the service period, which depends on the purchased license period.
+c.	The license may be used for commercial purposes.
+d.	Software updates are free of charge and can be downloaded from the Licensor's website at any time.
+e.	The license allows for a simultaneous number of Instances equal to the number of licenses purchased for a given Service Period.
+f.	The Licensor reserves the right to change the fees for the Software at any time. However, this change does not apply to licenses already purchased during their Service Period.
+g.	In the event of not receiving the entire remuneration for a given Service Period in respect of the remuneration for the Software, receiving a request for reimbursement of the fee already made by the payment operator, bank or card issuer or the inability to collect the fee, the Licensor has the right to remotely block the operation of all Software Instances belonging to the Licensee.
+h.	Licensor may, at his/her sole discretion, discontinue, restrict or discontinue licensing the Software without cause.
+i.	If this Agreement is terminated, withdrawn or expired for any reason, Licensee's obligations to pay the fees charged will remain in effect.
+4)	If you choose a commercial license with a one-time fee, the following terms of use for the Software apply:
+a.	The license is payable. The fee is charged as a one-off payment.
+b.	The license may be used for commercial purposes.
+c.	Software updates are paid, excluding updates containing critical security fixes.
+d.	The license allows you to have a simultaneous number of Instances equal to the number of licenses purchased.
+e.	The license is granted for an indefinite period.
+f.	In the event of termination, withdrawal or expiration of this Agreement for any reason, the Licensor retains the rights to the fees and charges already collected.
+
+
+§ 6. Technical support
+1)	The Licensee offers a Technical Support service under which the Licensee undertakes to receive, through its Website, reports of errors, failures, technical problems and technical inquiries from the Licensee and to cooperate with them in order to solve them comprehensively.
+2)	As part of the technical support, the Licensor is obliged to deal with the Licensor's application in less than 24 hours. The Licensor does not guarantee the time of solving the defect or problem.
+3)	The Licensor may offer additional, paid technical support plans on its Website, which offer faster response times to error reports or other forms of communication with the Licensee.
+4)	Technical support is offered to commercial licenses only, free licenses are excluded.
+5)	Technical support for a commercial license in the subscription model is directly related to the Service Term of the license itself.
+6)	Technical support for a one-time license is provided for a full 365 days from the moment of purchase. It is possible to extend this period for an additional fee.
+7)	The Licensor may refuse to provide Technical Support in the event of:
+a.	Unauthorized modification of the Software by the Licensee or a third party.
+b.	If the Server does not meet the Minimum Requirements for the Software or its operation indicates a hardware failure or malfunction of the dependent software, such as the Web Server or the Operating System.
+c.	In the event of failure to receive the entire amount due for the granted license or related services
+d.	In case of errors, failures or incorrect configuration of the network architecture in which the Server is located
+8)	Technical support does not cover the issue of Storm Player video compatibility with other scripts of the Websites.
+9)	Technical support does not cover the operation and compatibility of the Software with third party or third party programs and scripts.
+10)	The Licensor reserves the right to collect IT data from all Software Instances, including in particular error data, transmission statistics and generated load for the entire period of use of the Software. At the same time, the Licensor ensures that individual data of the Viewers or persons operating the Software, which in any form would allow their subsequent identification, are not and will never be collected.
+
+
+§ 7. Intellectual property
+1)	The software and all copies thereof are the exclusive intellectual property of the Licensor and are protected by proprietary and patent law. The organizational structure of the software along with the source code and the object code are confidential and valuable trade secrets of the Licensor.
+2)	The Licensor is obliged to maintain the confidentiality of the Software, in particular the execution files and License Keys.
+3)	The Licensee is not granted any rights, titles or licenses to use the trademarks of the Software or the Licensor himself. It is strictly forbidden to publish the Trademarks in any form without the prior written consent of the Licensor.
+4)	The Licensee agrees that the Licensor may use his/her name, the name of the represented entity, logos and other identifying information free of charge in his/her advertising materials and on the Website.
+
+
+§ 8. Termination, withdrawal and expiration
+1)	The Licensor has the right to withdraw from this Agreement in the event of a breach of any of its provisions with a 30-day notice period.
+2)	In the event of termination, withdrawal or expiry of this Agreement, Licensee must remove and destroy all copies of the Software from all Servers and scripts of the Website within 7 days from the date of receipt of the relevant notice.
+3)	Payments made under this Agreement to the Licensor are non-refundable.
+
+§ 9. Limited Warranty
+1)	The Licensor ensures that the Software complies with the advertisements, graphic materials and descriptions available on the Licensor's Website. In the event of any incompatibility or deficiencies in the functionality of the Software, the Licensor is obliged to supplement these deficiencies within 90 days from the moment the Licensee reports this fact.
+2)	The Licensor ensures that the Software does not infringe the rights of entities and third parties and is free from legal defects.
+3)	The Licensor is not liable for any damages and lost profits caused by the operation of the Software.
+
+
+§ 10. Taxes
+1)	All prices listed on the Licensor's website or presented in the form of an individual offer are net prices. Depending on the Licensee's tax residence and the nature of the business activity (or lack thereof), an appropriate value added tax (VAT) may be added to the final price.
+2)	The Licensee is obliged to pay all taxes in the form of value added tax (VAT), withholding tax, customs duties and the like to the relevant tax authority.
+
+
+§ 11. Other legal issues
+1)	In matters not covered by this contract, the provisions of the civil law of the Republic of Poland shall apply.
+2)	Any disputes arising from this Agreement shall be submitted to the common courts of law competent for the Licensor.
+3)	The Licensor has the right to transfer its obligations resulting from this agreement to a third party at any time, after prior notification to the Licensee.
+
+§ 12. Other provisions
+1)	Licensor's contact details:
+•	Web-Anatomy s.c., 43-502, Czechowice-Dziedzice, Łężna 12
+•	https://stormstreaming.com
+•	contact@stormstreaming.com
+
+2)	Date of publication: 14.12.2020
+3)	License version: 1.00
+
+

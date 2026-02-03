@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+/node_modules
+/build
+/dist
+package-lock.json
+*.map
+/deploy/*.*
+sftp.config.json
+s3.config.json

@@ -1,0 +1,6 @@
+/**
+ * Different buffer states
+ */
+export enum QualityControlMode {
+    PASSIVE="PASSIVE", RESOLUTION_AWARE = "RESOLUTION_AWARE", UNKNOWN="UNKNOWN", HIGHEST_QUALITY = "HIGHEST_QUALITY", LOWEST_QUALITY = "LOWEST_QUALITY"
+}

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StormPlayer Core DEVELOPER PAGE</title>
+  <script src="../dist/iife/index.js"></script>
+</head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  body {font-family: "Courier Prime", monospace;}
+  span {width:100%;float:left; font-size:10px}
+  button {margin:5px;padding:3px 6px;  font-family: "Courier Prime", monospace;}
+  label {margin:-20px 0 -20px 0;position:absolute;display: block;background:white;padding-left:10px;padding-right:10px;  font-family: "Courier Prime", monospace;font-style: italic;}
+  .selectWrapper {display: flex}
+  .selectWrapper label {position: relative;margin: 0;padding-top: 4px;float:left;font-size: 12px;font-style:normal;}
+  .selectWrapper select {float:left;position: relative}
+  .toolbox {padding:10px;margin-left:10px;position: relative;margin-top:20px;border:2px dashed grey}
+  .toolbox-wrapper {display:flex}
+  ul {margin-right:10px;display: block;padding-inline-start:10px}
+  li {  display: flex;  flex-wrap: nowrap;  align-items: center;font-size: 14px;font-style: normal;padding-bottom: 10px;}
+  li span { display: inline;font-size: 14px; font-weight: 600;}
+  .value {margin-left:7px}
+</style>
+<body>
+
+<div id="storm_player_0">
+  <h1>StormPlayer Core - DEVELOPER PAGE</h1>
+  <div id="main" style="background:grey">
+    <div id="vContainer"></div>
+  </div>
+</div>
+
+<div id="vContainer2" style="position:fixed;left:0;top:0;width:30%;z-index:2;background:red"></div>
+
+<div class="toolbox-wrapper">
+
+  <div class="toolbox">
+    <label>Playback</label>
+    <ul>
+      <li>StreamKey: <span id="streamKeyValue" class="value"></span></li>
+      <li>PlaybackState: <span id="playbackStateValue" class="value"></span></li>
+      <li>StreamState: <span  id="streamStateValue"  class="value"></span></li>
+      <li>Volume: <span id="volumeValue" class="value"></span></li>
+      <li>Muted: <span id="mutedValue" class="value"></span></li>
+      <li>Muted by: <span id="mutedByValue" class="value"></span></li>
+    </ul>
+  </div>
+
+  <div class="toolbox">
+    <label>Quality</label>
+    <ul>
+      <li>Quality label: <span id="selectedQualityLabel" class="value"></span></li>
+      <li>Quality monogram: <span id="selectedQualityMonogram" class="value"></span></li>
+      <li><button onclick="console.log(storm.getSourceItemList())">getSourceItemList()</button></li>
+      <li><button onclick="console.log(storm.getCurrentSourceItem())">getCurrentSourceItem()</button></li>
+      <li><button onclick="console.log(storm.getQualityItemList())">getQualityItemList()</button></li>
+      <div class="selectWrapper">
+        <label for="qualityList">Quality Switch</label>
+        <select id="qualityList"></select>
+      </div>
+    </ul>
+  </div>
+
+  <div class="toolbox">
+    <label>LIBRARY</label>
+    <ul>
+      <li>BW Graph: <div id="graph2" style="width:100px;height:20px"></div></li>
+      <li>Curr. Bandwidth: <span id="currBandwidthValue" class="value"></span></li>
+      <li>Min. Bandwidth: <span id="minBandwidthValue" class="value"></span></li>
+      <li>Max. Bandwidth: <span id="maxBandwidthValue" class="value"></span></li>
+      <li>BW Stability Trend: <span id="bwStabilityTrend" class="value"></span></li>
+    </ul>
+  </div>
+
+  <div class="toolbox">
+    <label>QUALITY</label>
+    <ul>
+      <li>Mode: <span id="qualityMode" class="value"></span></li>
+      <li>      <div class="selectWrapper">
+        <label for="modeList">Mode Switch</label>
+        <select id="modeList">
+          <option value="passive">passive</option>
+          <option value="highestQuality">highestQuality</option>
+          <option value="lowestQuality">lowestQuality</option>
+          <option value="resolutionAware" selected>resolutionAware</option>
+        </select>
+      </div></li>
+
+      <li>Degrade Charges: <span id="degradeCountValue" class="value"></span><button onclick="increaseDegrade()">[+]</button></li>
+      <li>Fake Cap: <input type="number" id="fakeCap" value="1000" style="width:60px" /><button onclick="setFakeCap()">Set</button></li>
+      <li>Next action: <span id="nextActionTime" class="value"></span></li>
+      <li>BW Cap: <span id="bwCapValue" class="value"></span></li>
+      <li><button onclick="removeTime(10)">[-] 10</button><button onclick="removeTime(60)">[-] 60</button><button onclick="removeTime(900)">[-] 900</button></li>
+    </ul>
+  </div>
+
+  <div class="toolbox">
+    <label>BUFFER</label>
+    <ul>
+      <li>Buffer Graph: <div id="graph1" style="width:100px;height:20px"></div></li>
+      <li>Buffer Size: <span id="bufferSizeValue" class="value"></span></li>
+      <li>Buffer Stability Graph: <div id="graph3" style="width:100px;height:20px"></div></li>
+      <li>Buffer Stability Trend: <span id="bufferStabilityTrend" class="value"></span></li>
+      <li>Buffer Stability Dev: <span id="bufferStabilityDev" class="value"></span></li>
+    </ul>
+  </div>
+
+  <div class="toolbox">
+    <label>PLAYBACK</label>
+    <ul>
+      <li>Playback Rate: <span id="playbackRateValue" class="value"></span></li>
+      <li>Playback duration: <span id="playbackDurationValue" class="value"></span></li>
+      <li>Playback starTime: <span id="playbackStartTimeValue" class="value"></span></li>
+      <li>Stream duration: <span  id="streamDurationValue"class="value"></span></li>
+      <li>Stream starTime: <span id="streamStartTimeValue" class="value"></span></li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="toolbox-wrapper">
+  <div class="toolbox">
+    <label>Playback</label>
+    <button onclick="storm.play()">play()</button>
+    <button onclick="storm.pause()">pause()</button>
+    <button onclick="storm.stop()">stop()</button>
+    <button onclick="storm.togglePlay()">togglePlay()</button>
+    <button onclick="storm.subscribe('test', true)">subscribe('test', true)</button>
+    <button onclick="storm.subscribe('dupa', true)">subscribe('dupa', true)</button>
+    <button onclick="storm.subscribe('test', false)">subscribe('test', false)</button>
+    <button onclick="storm.unsubscribe()">unsubscribe()</button>
+    <button onclick="functionAppend('isPlaying: '+storm.isPlaying());console.log('storm.isPlaying', storm.isPlaying())">isPlaying()</button>
+    <button onclick="functionAppend('getPlaybackState: '+storm.getPlaybackState());console.log('storm.getPlaybackState', storm.getPlaybackState())">getPlaybackState()</button>
+    <button onclick="functionAppend('getStreamState: '+storm.getStreamState());console.log('storm.getStreamState', storm.getStreamState())">getStreamState()</button>
+    <button onclick="functionAppend('getAbsoluteStreamTime: '+storm.getAbsoluteStreamTime());console.log('storm.getAbsoluteStreamTime', storm.getAbsoluteStreamTime())">getAbsoluteStreamTime()</button>
+  </div>
+
+  <div class="toolbox">
+    <label>Sound</label>
+    <button onclick="storm.mute()">mute()</button>
+    <button onclick="storm.unmute()">unmute()</button>
+    <button onclick="storm.setVolume(0)">setVolume(0)</button>
+    <button onclick="storm.setVolume(50)">setVolume(50)</button>
+    <button onclick="storm.setVolume(100)">setVolume(100)</button>
+    <button onclick="functionAppend('getVolume: '+storm.getVolume());console.log('storm.getVolume', storm.getVolume())">getVolume()</button>
+    <button onclick="functionAppend('isMuted: '+storm.getVolume());console.log('storm.isMuted', storm.getVolume())">isMuted()</button>
+  </div>
+
+  <div class="toolbox">
+    <label>Resize</label>
+    <button onclick="storm.setSize(640, 360)">resize(640, 360)</button>
+    <button onclick="storm.setSize(854, 480)">resize(854, 480)</button>
+    <button onclick="storm.setSize(1280, 720)">resize(1280, 720)</button>
+    <button onclick="storm.setSize(1920, 1080)">resize(1920, 1080)</button>
+    <button onclick="storm.setWidth(360)">setWidth(360)</button>
+    <button onclick="storm.setWidth('50%')">setWidth('50%')</button>
+    <button onclick="storm.setWidth('100%')">setWidth('100%')</button>
+    <button onclick="storm.setHeight(180)">setHeight(180)</button>
+    <button onclick="storm.setHeight('50%')">setHeight('50%')</button>
+    <button onclick="storm.setHeight('100%')">setHeight('100%')</button>
+    <button onclick="functionAppend('getWidth: '+storm.getWidth());console.log('storm.getWidth', storm.getWidth())">getWidth()</button>
+    <button onclick="functionAppend('getHeight: '+storm.getHeight());console.log('storm.getHeight', storm.getHeight())">getHeight()</button>
+    <button onclick="storm.attachToContainer('vContainer')">attachToContainer('vContainer')</button>
+    <button onclick="storm.attachToContainer('vContainer2')">attachToContainer('vContainer2')</button>
+    <button onclick="storm.attachToContainer('vContainer3')">attachToContainer('vContainer3')</button>
+    <button onclick="storm.detachFromContainer()">detachFromContainer()</button>
+  </div>
+
+  <div class="toolbox">
+    <label>Quality</label>
+    <button onclick="getCurrentSourceItem()">getCurrentSourceItem()</button>
+    <button onclick="getQualityItemList()">getQualityItemList()</button>
+  </div>
+
+  <div class="toolbox">
+    <label>Other</label>
+    <button onclick="functionAppend('getLibraryID: '+storm.getLibraryID());console.log('storm.getLibraryID', storm.getLibraryID())">getLibraryID()</button>
+    <button onclick="functionAppend('getVersion: '+storm.getVersion());console.log('storm.getVersion', storm.getVersion())">getVersion()</button>
+    <button onclick="storm.destroy()">destroy()</button>
+    <button onclick="storm.enterFullScreen()">enterFullScreen()</button>
+  </div>
+
+</div>
+
+<div class="toolbox-wrapper">
+  <div class="toolbox"  style="width:50%">
+    <label>Player Log</label>
+    <div id="logContainer"></div>
+  </div>
+  <div class="toolbox" style="width:50%">
+    <label>Events recording</label>
+    <textarea id="events" rows="30" style="padding:10px;width: calc(100% - 20px)">Events:</textarea>
+  </div>
+</div>
+
+<script>
+
+  const config = {
+    stream: {
+      serverList: [                                // list of streaming server, 2nd, 3rd etc. will be used as backup
+        {
+          host: "localhost",                     // host or ip to the streaming server
+          application: "live",
+          port: 8080,                            // server port
+          ssl: false                             // whenever SSL connection should be used or not
+        },
+      ],
+    },
+    settings: {
+      autoStart: true,
+      video: {
+        scalingMode: "letterbox",
+        containerID: "vContainer",
+        width: "100%",
+        aspectRatio: "16:9",
+        resizeDebounce: 0,
+      },
+
+      quality: {
+        controlMode: "RESOLUTION_AWARE"    // resolutionAware, passive, highestQuality
+      },
+      audio: {
+        startVolume: 50,
+      },
+      debug: {
+        console: {
+          enabled: false,
+          logTypes: ["INFO", "ERROR", "TRACE", "WARNING", "SUCCESS"],
+          monoColor: false
+        },
+        container: {
+          enabled: true,
+          containerID: "logContainer",
+          logTypes: ["ERROR", "INFO", "TRACE", "WARNING", "SUCCESS"],
+          monoColor: false
+        },
+        playbackController: true,
+        playerUnit: true,
+        qualityController: true,
+        stageController: true
+      }
+    }
+  }
+
+  const storm = stormPlayerCore(config);
+
+  storm.addEventListener("streamEnd", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Stream ended`);
+  })
+
+  storm.addEventListener("optionalStreamData", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Optional stream data`);
+  })
+
+  storm.addEventListener("awaitingStream", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Awaiting for stream`);
+  })
+
+  storm.addEventListener("streamNotFound", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Stream not found`);
+  })
+
+  storm.addEventListener("playerReady", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Core Player is ready for interaction!`);
+  })
+
+  storm.addEventListener("serverConnectionInitiate", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnectionInitiate) Starting connection to: ${event.serverURL}`);
+  })
+
+  storm.addEventListener("serverConnect", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnect) Successfully connected to: ${event.serverURL}  | seqNum: ${event.sequenceNum} `);
+  })
+
+  storm.addEventListener("serverDisconnect", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - serverDisconnect: ${event.serverURL} | seqNum: ${event.sequenceNum} `);
+  })
+
+  storm.addEventListener("streamStateChange", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (streamStateChange): ${event.state}`);
+    document.getElementById("streamStateValue").innerHTML = event.state;
+  })
+
+  storm.addEventListener("qualityListUpdate", function (event) {
+    updateQualityList(storm.getQualityItemList());
+  })
+
+  storm.addEventListener("playbackStateChange", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStateChange): ${event.state}`);
+
+    document.getElementById("streamKeyValue").innerHTML = event.streamKey;
+    document.getElementById("playbackStateValue").innerHTML = event.state;
+
+  })
+
+  storm.addEventListener("serverConnectionError", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnectionError) Could not connect to server: ${event.serverURL}`);
+  })
+
+  storm.addEventListener("allConnectionsFailed", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - All servers failed!`);
+  })
+
+  storm.addEventListener("videoElementCreate", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - videoElementCreate!`);
+  })
+
+  storm.addEventListener("volumeChange", function (event) {
+
+    document.getElementById("volumeValue").innerHTML = event.volume;
+    document.getElementById("mutedValue").innerHTML = event.muted;
+    document.getElementById("mutedByValue").innerHTML = event.invokedBy;
+
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - volumeChanged! ${event.volume} | ${event.muted} | ${event.invokedBy}`);
+  })
+
+  storm.addEventListener("playbackInitiate", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackInitiate) Playback initiated!`);
+    updateQualityList(storm.getQualityItemList());
+  })
+
+  storm.addEventListener("bufferingStart", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (bufferingStart) Buffering has started!`);
+  })
+
+  storm.addEventListener("playbackStop", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStop) Playback Stop!`);
+  })
+
+  storm.addEventListener("bufferingComplete", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (bufferingComplete) Buffering is complete!`);
+  })
+
+  storm.addEventListener("playbackStart", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStart) Playback Start!`);
+  })
+
+  storm.addEventListener("playbackPause", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackPause) Playback Pause!`);
+  })
+
+  storm.addEventListener("metadataReceived", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - Metadata!`);
+  })
+
+  storm.addEventListener("fullScreenEnter", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - fullScreenEnter!`);
+  })
+
+  storm.addEventListener("fullScreenExit", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - fullScreenExit!`);
+  })
+
+  storm.addEventListener("playbackProgress", function (event) {
+
+    document.getElementById("playbackStartTimeValue").innerHTML = formatUnixTime(event.playbackStartTime);
+    document.getElementById("playbackDurationValue").innerHTML = formatSecondsWithMilliseconds(event.playbackDuration);
+    document.getElementById("streamDurationValue").innerHTML = formatSecondsWithMilliseconds(event.streamDuration);
+    document.getElementById("streamStartTimeValue").innerHTML = formatUnixTime(event.streamStartTime);
+  })
+
+  storm.initialize();
+
+  const graph1 = storm.createBufferGraph("graph1", 50).start();
+  const graph2 = storm.createBandwidthGraph("graph2", 50).start();
+  const graph3 = storm.createBufferStabilityGraph("graph3", 50).start();
+
+  storm.subscribe("test", true);
+
+  function updateQualityList(qualities) {
+
+    const qualityList = document.getElementById('qualityList');
+    qualityList.innerHTML = '';
+
+    qualities.forEach(quality => {
+      const option = document.createElement('option');
+      option.value = quality.id;
+      option.textContent = quality.label;
+      qualityList.appendChild(option);
+
+      if (quality.isSelected) {
+        document.getElementById("selectedQualityLabel").innerHTML = quality.label;
+        document.getElementById("selectedQualityMonogram").innerHTML = quality.monogram;
+        qualityList.value = quality.id;
+      }
+
+    });
+
+  }
+
+  document.getElementById('qualityList').addEventListener('change', () => {
+    storm.playQualityItem(document.getElementById('qualityList').value);
+  });
+
+  document.getElementById('modeList').addEventListener('change', () => {
+    storm.setQualityControlMode(document.getElementById('modeList').value);
+  });
+
+
+  function formatUnixTime(unixTime) {
+    const date = new Date(unixTime);
+
+    const pad = (num) => num.toString().padStart(2, '0');
+
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  function formatSecondsWithMilliseconds(milliseconds) {
+
+    const hours = Math.floor(milliseconds / 3600000);
+    milliseconds %= 3600000;
+    const minutes = Math.floor(milliseconds / 60000);
+    milliseconds %= 60000;
+    const seconds = Math.floor(milliseconds / 1000);
+    const milisecondsLeft = milliseconds % 1000;
+
+    const formattedHours = hours < 10 ? '0' + hours : hours;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+    const formattedMilliseconds = milisecondsLeft.toString().padStart(3, '0');
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
+  }
+
+  function removeTime(value) {
+    storm?.getQualityController()?.reduceUpgradeTimeout(value);
+  }
+
+  function functionAppend(appender) {
+    let allText = document.getElementById("events").value;
+    document.getElementById("events").value = appender + "\r\n\r\n" + allText
+  }
+
+  function increaseDegrade() {
+    storm?.getPlaybackController()?.getPlayer()?._degradeChargeMeter.addEntry();
+  }
+
+  function setFakeCap() {
+    const value = document.getElementById("fakeCap").value;
+    storm.getStorageManager().saveField("fakeBandwidthCap", value.toString());
+    document.getElementById("fakeCap").value = 0;
+  }
+
+  setInterval(() => {
+
+    let playbackRatio = storm?.getPlaybackRate() ?? "Unknown";
+    document.getElementById("playbackRateValue").innerHTML = playbackRatio;
+
+    let bwCapValue = storm?.getStorageManager().getField("bandwidthCapValue");
+    document.getElementById("bwCapValue").innerHTML = Number(bwCapValue).toFixed(2) + " kbps";
+
+    let qualityMode = storm?.getQualityControlMode() ?? "unknown";
+    document.getElementById("qualityMode").innerHTML = qualityMode;
+
+    let nextActionTime = storm?.getQualityController()?.getTimeToNextUpgrade() ?? 0;
+    document.getElementById("nextActionTime").innerHTML = nextActionTime + " s";
+
+    let overloadCount = storm?.getPlaybackController()?.getPlayer()?._degradeChargeMeter.currentCount ?? 0;
+    document.getElementById("degradeCountValue").innerHTML = overloadCount;
+
+    // bandwidth stability:
+    let bwStabilityTrendLabel = storm?.getBandwidthAnalyser()?.currentTrend ?? "unknown";
+    let bwStabilityTrendDuration = storm?.getBandwidthAnalyser()?.trendDuration ?? 0;
+    document.getElementById("bwStabilityTrend").innerHTML = bwStabilityTrendLabel + " (" + bwStabilityTrendDuration.toFixed(3) + " s)";
+
+    // current bandwidth
+    let currBandwidth = storm?.getBandwidthMeter()?.currentBandwidth ?? "0";
+    document.getElementById("currBandwidthValue").innerHTML = (currBandwidth / 1000).toFixed(2) + " kbps"
+
+    // minimal bandwidth
+    let minBandwidth = storm?.getBandwidthMeter()?.minBandwidth ?? "0";
+    document.getElementById("minBandwidthValue").innerHTML = (minBandwidth / 1000).toFixed(2) + " kbps"
+
+    // max bandwidth
+    let maxBandwidth = storm?.getBandwidthMeter()?.maxBandwidth ?? "0";
+    document.getElementById("maxBandwidthValue").innerHTML = (maxBandwidth / 1000).toFixed(2) + " kbps"
+
+    // buffer size
+    let bufferSize = storm?.getBufferAnalyser()?.bufferSize ?? "0";
+    document.getElementById("bufferSizeValue").innerHTML = bufferSize.toFixed(2) + " s";
+
+    let bufferStabilityLabel = storm?.getBufferAnalyser()?.stability ?? "unknown";
+    let bufferStabilityDev = storm?.getBufferAnalyser()?.bufferDeviation ?? 0;
+    document.getElementById("bufferStabilityTrend").innerHTML = bufferStabilityLabel;
+    document.getElementById("bufferStabilityDev").innerHTML = bufferStabilityDev.toFixed(3);
+
+  }, 100)
+
+  function generateStreamToken(secret, algorithm = 'SHA256') {
+    const unixTime = Math.floor(Date.now() / 1000);
+    const unixTimeRounded = unixTime - (unixTime % 60);
+
+    const data = unixTimeRounded + secret;
+
+    return CryptoJS[algorithm](data).toString();
+  }
+
+
+  function getCurrentSourceItem(){
+    console.log(storm.getCurrentSourceItem())
+    functionAppend(JSON.stringify(storm.getCurrentSourceItem()));
+  }
+
+  function getQualityItemList(){
+    console.log(storm.getQualityItemList())
+    functionAppend(JSON.stringify(storm.getQualityItemList()));
+  }
+
+</script>
+</body>
+</html>
