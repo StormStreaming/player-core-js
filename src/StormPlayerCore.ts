@@ -137,7 +137,6 @@ export class StormPlayerCore extends EventDispatcher {
             return;
         }
 
-        // WINDOW.StormLibraryArray
         if (this.DEV_MODE && !('StormPlayerCoreArray' in window)) {
             (window as any).StormLibraryArray = [];
         }(window as any).StormLibraryArray.push(this);
@@ -164,7 +163,7 @@ export class StormPlayerCore extends EventDispatcher {
             return;
 
         if(this._configManager == null)
-            throw Error("Stream Config was not provided for this library! A properly configured object must be provided through the constructor or via the setConfig method before using the initialize() method.")
+            throw Error("Stream Config was not provided for this player! A properly configured object must be provided through the constructor or via the setConfig method before using the initialize() method.")
 
         this._storageManager = new StorageManager(this);                 // Storing user data
         this._stageController = new StageController(this);               // Visual elements like VideoElement
@@ -180,7 +179,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Sets stream config for the library (or overwrites an existing one).
+     * Sets stream config for the player (or overwrites an existing one).
      * @param streamConfig
      */
     public setStreamConfig(streamConfig:StormStreamConfig):void {
@@ -198,8 +197,8 @@ export class StormPlayerCore extends EventDispatcher {
             this._configManager = new ConfigManager(copiedStreamConfig);
             this._logger = new Logger(this._configManager.getSettingsData().getDebugData(), this);
 
-            this._logger.info(this, "Storm Library :: Storm Streaming Suite");
-            this._logger.info(this, "LibraryID: " + this._playerID);
+            this._logger.info(this, "Storm Player Core :: Storm Streaming Suite");
+            this._logger.info(this, "ID: " + this._playerID);
             this._logger.info(this, "Version: " + this.PLAYER_VERSION + " | Compile Date: " + this.COMPILE_DATE + " | Branch: " + this.PLAYER_BRANCH);
             this._logger.info(this, "UserCapabilities :: Browser: " + UserCapabilities.getBrowserName() + " " + UserCapabilities.getBrowserVersion());
             this._logger.info(this, "UserCapabilities :: Operating System: " + UserCapabilities.getOS() + " " + UserCapabilities.getOSVersion());
@@ -229,7 +228,7 @@ export class StormPlayerCore extends EventDispatcher {
 
     /**
      * Initiates playback of a video stream. If a video was previously paused, you can use this method to resume playback.
-     * For this method to work, the library must be subscribed to a stream (check the streamKey field in the config
+     * For this method to work, the player must be subscribed to a stream (check the streamKey field in the config
      * and/or the subscribe method).
      */
     public play():void {
@@ -255,7 +254,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Stops the current playback and ceases all operations. It also disconnects the library from a server.
+     * Stops the current playback and ceases all operations. It also disconnects the player from a server.
      * To restore connection, use the subscribe() method.
      */
     public stop():void {
@@ -269,7 +268,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Requests a subscription to a given streamKey. When a library is subscribed to a certain streamKey, it will receive
+     * Requests a subscription to a given streamKey. When a player is subscribed to a certain streamKey, it will receive
      * notifications regarding its status.
      *
      * @param streamKey newStreamKey (will replace the one provided within config object)
@@ -306,7 +305,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns true if this library instance is currently playing a stream. To obtain more detailed information
+     * Returns true if this player instance is currently playing a stream. To obtain more detailed information
      * about the stream's state, you can use the getPlaybackState() method.
      */
     public isPlaying():boolean {
@@ -319,35 +318,35 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns true if this library instance is connected to a server.
+     * Returns true if this player instance is connected to a server.
      */
     public isConnected():boolean {
         return this._networkController?.getConnection().isConnectionActive() ?? false;
     }
 
     /**
-     * Returns true if this library instance is authorized with a server.
+     * Returns true if this player instance is authorized with a server.
      */
     public isAuthorized():boolean {
         return this._networkController?.getIfAuthorized() ?? false;
     }
 
     /**
-     * Returns the current playback state of this library instance.
+     * Returns the current playback state of this player instance.
      */
     public getPlaybackState():PlaybackState {
         return this._playbackController?.getPlaybackState() ?? PlaybackState.UNKNOWN;
     }
 
     /**
-     * Returns the current stream state to which the library is subscribed.
+     * Returns the current stream state to which the player is subscribed.
      */
     public getStreamState():StreamState {
         return this._playbackController?.getStreamState() ?? StreamState.UNKNOWN;
     }
 
     /**
-     * Mutes the library's video object. It's not the same as setVolume(0), as both methods can be applied together.
+     * Mutes the player's video object. It's not the same as setVolume(0), as both methods can be applied together.
      * @param source - "user" for user interaction, "service" for programmatic control
      */
     public mute(source: "user" | "service" = "user"): void {
@@ -360,7 +359,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Unmutes the library's video object.
+     * Unmutes the player's video object.
      * @param source - "user" for user interaction, "service" for programmatic control
      */
     public unmute(source: "user" | "service" = "user"): void {
@@ -373,7 +372,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Checks whether the library is muted.
+     * Checks whether the player is muted.
      */
     public isMute(): boolean {
         return this._stageController?.getScreenElement()?.getIfMuted()
@@ -396,7 +395,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Sets new volume for the library (0-100). Once the method is performed, the volumeChange event will be triggered.
+     * Sets new volume for the player (0-100). Once the method is performed, the volumeChange event will be triggered.
      * If the video was muted prior to the volume change, it will be automatically unmuted.
      * @param newVolume
      */
@@ -406,7 +405,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns library volume (0-100).
+     * Returns player volume (0-100).
      */
     public getVolume(): number {
         return this._stageController?.getScreenElement()?.getVolume()
@@ -458,7 +457,7 @@ export class StormPlayerCore extends EventDispatcher {
     //------------------------------------------------------------------------//
 
     /**
-     * Attaches the library to a new parent container using either a container ID (string) or a reference to an HTMLElement.
+     * Attaches the player to a new parent container using either a container ID (string) or a reference to an HTMLElement.
      * If the instance is already attached, it will be moved to a new parent.
      *
      * @param container
@@ -472,7 +471,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Detaches the library from the current parent element, if possible.
+     * Detaches the player from the current parent element, if possible.
      */
     public detachFromContainer():boolean {
         let result:boolean = false;
@@ -482,7 +481,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns the current parent element of the library, or null if none exists.
+     * Returns the current parent element of the player, or null if none exists.
      */
     public getContainer():HTMLElement | null {
         return this._stageController?.getParentElement() ?? null;
@@ -493,7 +492,7 @@ export class StormPlayerCore extends EventDispatcher {
     //------------------------------------------------------------------------//
 
     /**
-     * Sets a new width and height for the library. The values can be given as a number (in which case they are
+     * Sets a new width and height for the player. The values can be given as a number (in which case they are
      * treated as the number of pixels), or as a string ending with "px" (this will also be the number of pixels) or "%",
      * where the number is treated as a percentage of the parent container's value.
      *
@@ -517,7 +516,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Sets a new width for the library. The value can be given as a number (in which case it is treated as the
+     * Sets a new width for the player. The value can be given as a number (in which case it is treated as the
      * number of pixels), or as a string ending with "px" (this will also be the number of pixels) or "%", where the
      * number is treated as a percentage of the parent container's value.
      *
@@ -536,7 +535,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Sets a new height for the library. The value can be given as a number (in which case it is treated as the
+     * Sets a new height for the player. The value can be given as a number (in which case it is treated as the
      * number of pixels), or as a string ending with "px" (this will also be the number of pixels) or "%", where the
      * number is treated as a percentage of the parent container's value.
      *
@@ -555,7 +554,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns current library width in pixels
+     * Returns current player width in pixels
      */
     public getWidth():number {
         if(this._initialized)
@@ -568,7 +567,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns current library height in pixels.
+     * Returns current player height in pixels.
      */
     public getHeight():number {
         if(this._initialized)
@@ -581,7 +580,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Changes the library scaling mode. For reference, please check scaling mode in the library config.
+     * Changes the player scaling mode. For reference, please check scaling mode in the player config.
      * @param newMode new scaling mode name (fill, letterbox, original, crop)
      */
     public setScalingMode(newMode:ScalingType):void {
@@ -593,7 +592,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns the current library scaling mode. For reference, please check scaling mode in the library config.
+     * Returns the current player scaling mode. For reference, please check scaling mode in the player config.
      */
     public getScalingMode():ScalingType {
         if(this._stageController){
@@ -604,7 +603,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Forces the library to recalculate its size based on parent internal dimensions.
+     * Forces the player to recalculate its size based on parent internal dimensions.
      */
     public updateToSize():void {
         if(this._initialized){
@@ -722,7 +721,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns true if the library instance is in FullScreen mode.
+     * Returns true if the player instance is in FullScreen mode.
      */
     public isFullScreenMode():boolean {
         if(this._initialized && this._stageController)
@@ -735,7 +734,7 @@ export class StormPlayerCore extends EventDispatcher {
     //------------------------------------------------------------------------//
 
     /**
-     * Returns the ID of this library instance. Each subsequent instance has a higher number.
+     * Returns the ID of this player instance. Each subsequent instance has a higher number.
      */
     public getLibraryID():number {
         return this._playerID;
@@ -756,49 +755,49 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns NetworkController for this library object (internal)
+     * Returns NetworkController for this player object (internal)
      */
     public getNetworkController():NetworkController | null {
         return this._networkController;
     }
 
     /**
-     * Returns PlaybackController for this library object (internal)
+     * Returns PlaybackController for this player object (internal)
      */
     public getPlaybackController():PlaybackController | null {
         return this._playbackController;
     }
 
     /**
-     * Returns PlaybackController for this library object (internal)
+     * Returns PlaybackController for this player object (internal)
      */
     public getQualityController():QualityController | null {
         return this._qualityController;
     }
 
     /**
-     * Returns StageController for this library object (internal)
+     * Returns StageController for this player object (internal)
      */
     public getStageController():StageController | null {
         return this._stageController;
     }
 
     /**
-     * Returns the Video Element used by this instance of the library.
+     * Returns the Video Element used by this instance of the player.
      */
     public getVideoElement():HTMLVideoElement | null {
         return this._stageController?.getScreenElement()?.getVideoElement() ?? null;
     }
 
     /**
-     * Returns true if this library instance has already been initialized.
+     * Returns true if this player instance has already been initialized.
      */
     public isInitialized():boolean{
         return this._initialized;
     }
 
     /**
-     * Returns the version of this library instance. The version is returned in the SemVer format (Major.Minor.Patch).
+     * Returns the version of this player instance. The version is returned in the SemVer format (Major.Minor.Patch).
      */
     public getVersion():string {
         return this.PLAYER_VERSION
@@ -812,7 +811,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns the development branch of this library (e.g., main, experimental).
+     * Returns the development branch of this player (e.g., main, experimental).
      */
     public getBranch():string {
         return this.PLAYER_BRANCH
@@ -861,7 +860,7 @@ export class StormPlayerCore extends EventDispatcher {
     //------------------------------------------------------------------------//
 
     /**
-     * Returns the Bandwidth Analyser component for the library. This component contains statistical data
+     * Returns the Bandwidth Analyser component for the player. This component contains statistical data
      * regarding the stability of the internet connection.
      */
     public getBandwidthAnalyser():BandwidthAnalyser | null {
@@ -869,7 +868,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns the Bandwidth Meter component for the library. This component contains statistical data related
+     * Returns the Bandwidth Meter component for the player. This component contains statistical data related
      * to the performance of the internet connection.
      */
     public getBandwidthMeter():BandwidthMeter | null {
@@ -877,7 +876,7 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
-     * Returns the Buffer Analyser component for the library. This component contains statistical data regarding
+     * Returns the Buffer Analyser component for the player. This component contains statistical data regarding
      * the buffer state and its stability.
      */
     public getBufferAnalyser():BufferAnalyser | null {
@@ -902,10 +901,10 @@ export class StormPlayerCore extends EventDispatcher {
     //------------------------------------------------------------------------//
 
     /**
-     * Destroys this instance of StormLibrary and disconnects from a server.
+     * Destroys this instance of the player and disconnects from a server.
      */
     public destroy():void {
-        this._logger.warning(this, "Destroying library instance, bye, bye!")
+        this._logger.warning(this, "Destroying player instance, bye, bye!")
 
         if(this._graphs != null && this._graphs.length > 0){
             for(let i:number =0;i<this._graphs.length;i++){
