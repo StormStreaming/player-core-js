@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Storm Library DEVELOPER PAGE</title>
+  <title>StormPlayer Core - DEVELOPER PAGE</title>
   <script src="../dist/iife/index.js"></script>
 </head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
 <body>
 
 <div id="storm_player_0">
-  <h1>Storm Library - DEVELOPER PAGE</h1>
+  <h1>StormPlayer Core - DEVELOPER PAGE</h1>
   <div id="main" style="background:grey">
     <div id="vContainer"></div>
   </div>
@@ -81,10 +81,10 @@
       <li>      <div class="selectWrapper">
         <label for="modeList">Mode Switch</label>
         <select id="modeList">
-          <option value="passive">passive</option>
-          <option value="highestQuality">highestQuality</option>
-          <option value="lowestQuality">lowestQuality</option>
-          <option value="resolutionAware" selected>resolutionAware</option>
+          <option value="PASSIVE">PASSIVE</option>
+          <option value="HIGHEST_QUALITY">HIGHEST_QUALITY</option>
+          <option value="LOWEST_QUALITY">LOWEST_QUALITY</option>
+          <option value="RESOLUTION_AWARE" selected>RESOLUTION_AWARE</option>
         </select>
       </div></li>
 
@@ -110,11 +110,11 @@
   <div class="toolbox">
     <label>PLAYBACK</label>
     <ul>
-    <li>Playback Rate: <span id="playbackRateValue" class="value"></span></li>
-    <li>Playback duration: <span id="playbackDurationValue" class="value"></span></li>
-    <li>Playback starTime: <span id="playbackStartTimeValue" class="value"></span></li>
-    <li>Stream duration: <span  id="streamDurationValue"class="value"></span></li>
-    <li>Stream starTime: <span id="streamStartTimeValue" class="value"></span></li>
+      <li>Playback Rate: <span id="playbackRateValue" class="value"></span></li>
+      <li>Playback duration: <span id="playbackDurationValue" class="value"></span></li>
+      <li>Playback starTime: <span id="playbackStartTimeValue" class="value"></span></li>
+      <li>Stream duration: <span  id="streamDurationValue"class="value"></span></li>
+      <li>Stream starTime: <span id="streamStartTimeValue" class="value"></span></li>
     </ul>
   </div>
 
@@ -128,12 +128,13 @@
     <button onclick="storm.stop()">stop()</button>
     <button onclick="storm.togglePlay()">togglePlay()</button>
     <button onclick="storm.subscribe('test', true)">subscribe('test', true)</button>
+    <button onclick="storm.subscribe('dupa', true)">subscribe('dupa', true)</button>
     <button onclick="storm.subscribe('test', false)">subscribe('test', false)</button>
     <button onclick="storm.unsubscribe()">unsubscribe()</button>
-    <button onclick="console.log(storm.isPlaying())">isPlaying()</button>
-    <button onclick="console.log(storm.getPlaybackState())">getPlaybackState()</button>
-    <button onclick="console.log(storm.getStreamState())">getStreamState()</button>
-    <button onclick="console.log(storm.getAbsoluteStreamTime())">getAbsoluteStreamTime()</button>
+    <button onclick="functionAppend('isPlaying: '+storm.isPlaying());console.log('storm.isPlaying', storm.isPlaying())">isPlaying()</button>
+    <button onclick="functionAppend('getPlaybackState: '+storm.getPlaybackState());console.log('storm.getPlaybackState', storm.getPlaybackState())">getPlaybackState()</button>
+    <button onclick="functionAppend('getStreamState: '+storm.getStreamState());console.log('storm.getStreamState', storm.getStreamState())">getStreamState()</button>
+    <button onclick="functionAppend('getAbsoluteStreamTime: '+storm.getAbsoluteStreamTime());console.log('storm.getAbsoluteStreamTime', storm.getAbsoluteStreamTime())">getAbsoluteStreamTime()</button>
   </div>
 
   <div class="toolbox">
@@ -143,8 +144,8 @@
     <button onclick="storm.setVolume(0)">setVolume(0)</button>
     <button onclick="storm.setVolume(50)">setVolume(50)</button>
     <button onclick="storm.setVolume(100)">setVolume(100)</button>
-    <button onclick="console.log(storm.getVolume())">getVolume()</button>
-    <button onclick="console.log(storm.isMute())">isMuted()</button>
+    <button onclick="functionAppend('getVolume: '+storm.getVolume());console.log('storm.getVolume', storm.getVolume())">getVolume()</button>
+    <button onclick="functionAppend('isMuted: '+storm.getVolume());console.log('storm.isMuted', storm.getVolume())">isMuted()</button>
   </div>
 
   <div class="toolbox">
@@ -159,8 +160,8 @@
     <button onclick="storm.setHeight(180)">setHeight(180)</button>
     <button onclick="storm.setHeight('50%')">setHeight('50%')</button>
     <button onclick="storm.setHeight('100%')">setHeight('100%')</button>
-    <button onclick="console.log(storm.getWidth())">getWidth()</button>
-    <button onclick="console.log(storm.getHeight())">getHeight()</button>
+    <button onclick="functionAppend('getWidth: '+storm.getWidth());console.log('storm.getWidth', storm.getWidth())">getWidth()</button>
+    <button onclick="functionAppend('getHeight: '+storm.getHeight());console.log('storm.getHeight', storm.getHeight())">getHeight()</button>
     <button onclick="storm.attachToContainer('vContainer')">attachToContainer('vContainer')</button>
     <button onclick="storm.attachToContainer('vContainer2')">attachToContainer('vContainer2')</button>
     <button onclick="storm.attachToContainer('vContainer3')">attachToContainer('vContainer3')</button>
@@ -169,15 +170,14 @@
 
   <div class="toolbox">
     <label>Quality</label>
-    <button onclick="console.log(storm.getSourceList())">getSourceList()</button>
-    <button onclick="console.log(storm.getCurrentSourceItem())">getCurrentSourceItem()</button>
-    <button onclick="console.log(storm.getQualityItemList())">getQualityItemList()</button>
+    <button onclick="getCurrentSourceItem()">getCurrentSourceItem()</button>
+    <button onclick="getQualityItemList()">getQualityItemList()</button>
   </div>
 
   <div class="toolbox">
     <label>Other</label>
-    <button onclick="console.log(storm.getLibraryID())">getLibraryID()</button>
-    <button onclick="console.log(storm.getVersion())">getVersion()</button>
+    <button onclick="functionAppend('getPlayerID: '+storm.getPlayerID());console.log('storm.getPlayerID', storm.getPlayerID())">getPlayerID()</button>
+    <button onclick="functionAppend('getVersion: '+storm.getVersion());console.log('storm.getVersion', storm.getVersion())">getVersion()</button>
     <button onclick="storm.destroy()">destroy()</button>
     <button onclick="storm.enterFullScreen()">enterFullScreen()</button>
   </div>
@@ -197,12 +197,12 @@
 
 <script>
 
-  let config = {
+  const config = {
     stream: {
-      serverList: [                               // list of streaming server, 2nd, 3rd etc. will be used as backup
+      serverList: [                                // list of streaming server, 2nd, 3rd etc. will be used as backup
         {
-          host: "127.0.0.1",                     // host or ip to the streaming server
-          application:"live",
+          host: "localhost",                     // host or ip to the streaming server
+          application: "edge",
           port: 8080,                            // server port
           ssl: false                             // whenever SSL connection should be used or not
         },
@@ -213,26 +213,27 @@
       video: {
         scalingMode: "letterbox",
         containerID: "vContainer",
-        width:"60%",
-        aspectRatio:"16:9",
-        resizeDebounce:0,
+        width: "100%",
+        aspectRatio: "16:9",
+        resizeDebounce: 0,
       },
+
       quality: {
         controlMode: "RESOLUTION_AWARE"    // resolutionAware, passive, highestQuality
       },
       audio: {
-        startVolume:50,
+        startVolume: 50,
       },
       debug: {
         console: {
           enabled: false,
-          logTypes: ["INFO","ERROR", "TRACE", "WARNING", "SUCCESS"],
+          logTypes: ["INFO", "ERROR", "TRACE", "WARNING", "SUCCESS"],
           monoColor: false
         },
         container: {
           enabled: true,
           containerID: "logContainer",
-          logTypes: ["ERROR", "INFO", "TRACE", "WARNING","SUCCESS"],
+          logTypes: ["ERROR", "INFO", "TRACE", "WARNING", "SUCCESS"],
           monoColor: false
         },
         playbackController: true,
@@ -243,51 +244,50 @@
     }
   }
 
+  const storm = stormPlayerCore(config);
 
-  let storm = stormLibrary(config);
-
-  storm.addEventListener("streamEnd", function(event){
+  storm.addEventListener("streamEnd", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Stream ended`);
   })
 
-  storm.addEventListener("optionalStreamData", function(event){
+  storm.addEventListener("optionalStreamData", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Optional stream data`);
   })
 
-  storm.addEventListener("awaitingStream", function(event){
+  storm.addEventListener("awaitingStream", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Awaiting for stream`);
   })
 
-  storm.addEventListener("streamNotFound", function(event){
+  storm.addEventListener("streamNotFound", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Stream not found`);
   })
 
-  storm.addEventListener("playerReady", function(event){
+  storm.addEventListener("playerReady", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Core Player is ready for interaction!`);
   })
 
-  storm.addEventListener("serverConnectionInitiate", function(event){
+  storm.addEventListener("serverConnectionInitiate", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnectionInitiate) Starting connection to: ${event.serverURL}`);
   })
 
-  storm.addEventListener("serverConnect", function(event){
+  storm.addEventListener("serverConnect", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnect) Successfully connected to: ${event.serverURL}  | seqNum: ${event.sequenceNum} `);
   })
 
-  storm.addEventListener("serverDisconnect", function(event){
-    functionAppend(`Library ID: ${event.ref.getLibraryID()} - serverDisconnect: ${event.serverURL} | seqNum: ${event.sequenceNum} ` );
+  storm.addEventListener("serverDisconnect", function (event) {
+    functionAppend(`Library ID: ${event.ref.getLibraryID()} - serverDisconnect: ${event.serverURL} | seqNum: ${event.sequenceNum} `);
   })
 
-  storm.addEventListener("streamStateChange", function(event){
+  storm.addEventListener("streamStateChange", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (streamStateChange): ${event.state}`);
     document.getElementById("streamStateValue").innerHTML = event.state;
   })
 
-  storm.addEventListener("qualityListUpdate", function(event){
+  storm.addEventListener("qualityListUpdate", function (event) {
     updateQualityList(storm.getQualityItemList());
   })
 
-  storm.addEventListener("playbackStateChange", function(event){
+  storm.addEventListener("playbackStateChange", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStateChange): ${event.state}`);
 
     document.getElementById("streamKeyValue").innerHTML = event.streamKey;
@@ -295,19 +295,19 @@
 
   })
 
-  storm.addEventListener("serverConnectionError", function(event){
+  storm.addEventListener("serverConnectionError", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (serverConnectionError) Could not connect to server: ${event.serverURL}`);
   })
 
-  storm.addEventListener("allConnectionsFailed", function(event){
+  storm.addEventListener("allConnectionsFailed", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - All servers failed!`);
   })
 
-  storm.addEventListener("videoElementCreate", function(event){
+  storm.addEventListener("videoElementCreate", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - videoElementCreate!`);
   })
 
-  storm.addEventListener("volumeChange", function(event){
+  storm.addEventListener("volumeChange", function (event) {
 
     document.getElementById("volumeValue").innerHTML = event.volume;
     document.getElementById("mutedValue").innerHTML = event.muted;
@@ -316,51 +316,50 @@
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - volumeChanged! ${event.volume} | ${event.muted} | ${event.invokedBy}`);
   })
 
-  storm.addEventListener("playbackInitiate", function(event){
+  storm.addEventListener("playbackInitiate", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackInitiate) Playback initiated!`);
     updateQualityList(storm.getQualityItemList());
   })
 
-  storm.addEventListener("bufferingStart", function(event){
+  storm.addEventListener("bufferingStart", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (bufferingStart) Buffering has started!`);
   })
 
-  storm.addEventListener("playbackStop", function(event){
+  storm.addEventListener("playbackStop", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStop) Playback Stop!`);
   })
 
-  storm.addEventListener("bufferingComplete", function(event){
+  storm.addEventListener("bufferingComplete", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (bufferingComplete) Buffering is complete!`);
   })
 
-  storm.addEventListener("playbackStart", function(event){
+  storm.addEventListener("playbackStart", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackStart) Playback Start!`);
   })
 
-  storm.addEventListener("playbackPause", function(event){
+  storm.addEventListener("playbackPause", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - (playbackPause) Playback Pause!`);
   })
 
-  storm.addEventListener("metadataReceived", function(event){
+  storm.addEventListener("metadataReceived", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Metadata!`);
   })
 
-  storm.addEventListener("fullScreenEnter", function(event){
+  storm.addEventListener("fullScreenEnter", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - fullScreenEnter!`);
   })
 
-  storm.addEventListener("fullScreenExit", function(event){
+  storm.addEventListener("fullScreenExit", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - fullScreenExit!`);
   })
 
-  storm.addEventListener("playbackProgress", function(event){
+  storm.addEventListener("playbackProgress", function (event) {
 
     document.getElementById("playbackStartTimeValue").innerHTML = formatUnixTime(event.playbackStartTime);
     document.getElementById("playbackDurationValue").innerHTML = formatSecondsWithMilliseconds(event.playbackDuration);
     document.getElementById("streamDurationValue").innerHTML = formatSecondsWithMilliseconds(event.streamDuration);
     document.getElementById("streamStartTimeValue").innerHTML = formatUnixTime(event.streamStartTime);
   })
-
 
   storm.initialize();
 
@@ -381,7 +380,7 @@
       option.textContent = quality.label;
       qualityList.appendChild(option);
 
-      if(quality.isSelected){
+      if (quality.isSelected) {
         document.getElementById("selectedQualityLabel").innerHTML = quality.label;
         document.getElementById("selectedQualityMonogram").innerHTML = quality.monogram;
         qualityList.value = quality.id;
@@ -396,7 +395,7 @@
   });
 
   document.getElementById('modeList').addEventListener('change', () => {
-    storm.setQualityControlMode(document.getElementById('modeList').value);
+    storm.setQualityControlMode(document.getElementById('modeList').value, true);
   });
 
 
@@ -432,22 +431,22 @@
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}`;
   }
 
-  function removeTime(value){
+  function removeTime(value) {
     storm?.getQualityController()?.reduceUpgradeTimeout(value);
   }
 
-  function functionAppend(appender){
+  function functionAppend(appender) {
     let allText = document.getElementById("events").value;
-    document.getElementById("events").value =  appender+ "\r\n\r\n"  +allText
+    document.getElementById("events").value = appender + "\r\n\r\n" + allText
   }
 
-  function increaseDegrade(){
+  function increaseDegrade() {
     storm?.getPlaybackController()?.getPlayer()?._degradeChargeMeter.addEntry();
   }
 
-  function setFakeCap(){
+  function setFakeCap() {
     const value = document.getElementById("fakeCap").value;
-    storm.getStorageManager().saveField("fakeBandwidthCap",value.toString());
+    storm.getStorageManager().saveField("fakeBandwidthCap", value.toString());
     document.getElementById("fakeCap").value = 0;
   }
 
@@ -457,13 +456,13 @@
     document.getElementById("playbackRateValue").innerHTML = playbackRatio;
 
     let bwCapValue = storm?.getStorageManager().getField("bandwidthCapValue");
-    document.getElementById("bwCapValue").innerHTML = Number(bwCapValue).toFixed(2)+" kbps";
+    document.getElementById("bwCapValue").innerHTML = Number(bwCapValue).toFixed(2) + " kbps";
 
     let qualityMode = storm?.getQualityControlMode() ?? "unknown";
     document.getElementById("qualityMode").innerHTML = qualityMode;
 
     let nextActionTime = storm?.getQualityController()?.getTimeToNextUpgrade() ?? 0;
-    document.getElementById("nextActionTime").innerHTML = nextActionTime+" s";
+    document.getElementById("nextActionTime").innerHTML = nextActionTime + " s";
 
     let overloadCount = storm?.getPlaybackController()?.getPlayer()?._degradeChargeMeter.currentCount ?? 0;
     document.getElementById("degradeCountValue").innerHTML = overloadCount;
@@ -471,33 +470,49 @@
     // bandwidth stability:
     let bwStabilityTrendLabel = storm?.getBandwidthAnalyser()?.currentTrend ?? "unknown";
     let bwStabilityTrendDuration = storm?.getBandwidthAnalyser()?.trendDuration ?? 0;
-    document.getElementById("bwStabilityTrend").innerHTML = bwStabilityTrendLabel+" ("+bwStabilityTrendDuration.toFixed(3) +" s)";
+    document.getElementById("bwStabilityTrend").innerHTML = bwStabilityTrendLabel + " (" + bwStabilityTrendDuration.toFixed(3) + " s)";
 
     // current bandwidth
     let currBandwidth = storm?.getBandwidthMeter()?.currentBandwidth ?? "0";
-    document.getElementById("currBandwidthValue").innerHTML = (currBandwidth/1000).toFixed(2)+" kbps"
+    document.getElementById("currBandwidthValue").innerHTML = (currBandwidth / 1000).toFixed(2) + " kbps"
 
     // minimal bandwidth
     let minBandwidth = storm?.getBandwidthMeter()?.minBandwidth ?? "0";
-    document.getElementById("minBandwidthValue").innerHTML = (minBandwidth/1000).toFixed(2)+" kbps"
+    document.getElementById("minBandwidthValue").innerHTML = (minBandwidth / 1000).toFixed(2) + " kbps"
 
     // max bandwidth
     let maxBandwidth = storm?.getBandwidthMeter()?.maxBandwidth ?? "0";
-    document.getElementById("maxBandwidthValue").innerHTML = (maxBandwidth/1000).toFixed(2)+" kbps"
+    document.getElementById("maxBandwidthValue").innerHTML = (maxBandwidth / 1000).toFixed(2) + " kbps"
 
     // buffer size
     let bufferSize = storm?.getBufferAnalyser()?.bufferSize ?? "0";
-    document.getElementById("bufferSizeValue").innerHTML = bufferSize.toFixed(2)+" s";
+    document.getElementById("bufferSizeValue").innerHTML = bufferSize.toFixed(2) + " s";
 
     let bufferStabilityLabel = storm?.getBufferAnalyser()?.stability ?? "unknown";
-    let bufferStabilityDev =  storm?.getBufferAnalyser()?.bufferDeviation ?? 0;
+    let bufferStabilityDev = storm?.getBufferAnalyser()?.bufferDeviation ?? 0;
     document.getElementById("bufferStabilityTrend").innerHTML = bufferStabilityLabel;
     document.getElementById("bufferStabilityDev").innerHTML = bufferStabilityDev.toFixed(3);
 
-  },100)
+  }, 100)
 
+  function generateStreamToken(secret, algorithm = 'SHA256') {
+    const unixTime = Math.floor(Date.now() / 1000);
+    const unixTimeRounded = unixTime - (unixTime % 60);
 
+    const data = unixTimeRounded + secret;
 
+    return CryptoJS[algorithm](data).toString();
+  }
+
+  function getCurrentSourceItem(){
+    console.log(storm.getCurrentSourceItem())
+    functionAppend(JSON.stringify(storm.getCurrentSourceItem()));
+  }
+
+  function getQualityItemList(){
+    console.log(storm.getQualityItemList())
+    functionAppend(JSON.stringify(storm.getQualityItemList()));
+  }
 
 </script>
 </body>

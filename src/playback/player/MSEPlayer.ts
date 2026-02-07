@@ -128,6 +128,8 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
      */
     private _debug:boolean = false;
 
+    private _usePlaybackRateControl: boolean = true;
+
 
     //------------------------------------------------------------------------//
     // CONSTRUCTOR
@@ -157,6 +159,10 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         if(UserCapabilities.getBrowserName().toLowerCase() == "safari" || UserCapabilities.isMobile()){
             this._seekCooldown.setCooldownDuration(60);
             this._rateCooldown = new CooldownMonitor(30);
+        }
+
+        if (UserCapabilities.isIOS()) {
+            this._usePlaybackRateControl = false;
         }
 
         this._bitrateCooldown = new CooldownMonitor(20);
@@ -398,22 +404,25 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
                 //console.warn("OVER TARGET - buffer increasing!")
 
-                if(this._videoObject.playbackRate == 0.9) {
-                    this._videoObject.playbackRate = 1.0;
+                if(this._usePlaybackRateControl) {
 
-                    if(this._debug )
-                        this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
+                    if (this._videoObject.playbackRate == 0.9) {
+                        this._videoObject.playbackRate = 1.0;
 
-                    this._rateCooldown.triggerCooldown();
-                }
+                        if (this._debug)
+                            this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
 
-                if(this._videoObject.playbackRate == 1 && !this._rateCooldown.isCooling()) {
-                    this._videoObject.playbackRate = 1.1;
+                        this._rateCooldown.triggerCooldown();
+                    }
 
-                    if(this._debug )
-                        this._logger.decoratedLog("Playback Speed: 1.1", "dark-green");
+                    if (this._videoObject.playbackRate == 1 && !this._rateCooldown.isCooling()) {
+                        this._videoObject.playbackRate = 1.1;
 
-                    this._rateCooldown.triggerCooldown();
+                        if (this._debug)
+                            this._logger.decoratedLog("Playback Speed: 1.1", "dark-green");
+
+                        this._rateCooldown.triggerCooldown();
+                    }
                 }
 
             } else if (currentBufferSize < targetValue && !NumberUtilities.isNear(currentBufferSize, targetValue, this._targetMargin)) {
@@ -426,23 +435,27 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
                 //console.warn("BELOW TARGET - too slow!")
 
-                if(this._videoObject.playbackRate == 1.1){
-                    // console.error("ACTION - normalize!")
-                    if(this._debug )
-                        this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
+                if(this._usePlaybackRateControl) {
 
-                    this._videoObject.playbackRate = 1.0;
-                    this._rateCooldown.triggerCooldown();
-                }
+                    if (this._videoObject.playbackRate == 1.1) {
+                        // console.error("ACTION - normalize!")
+                        if (this._debug)
+                            this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
 
-                if(this._videoObject.playbackRate == 1.0 && !this._rateCooldown.isCooling()){
-                    // console.error("ACTION - slowing down!")
+                        this._videoObject.playbackRate = 1.0;
+                        this._rateCooldown.triggerCooldown();
+                    }
 
-                    if(this._debug )
-                        this._logger.decoratedLog("Playback Speed: 0.9", "dark-green");
+                    if (this._videoObject.playbackRate == 1.0 && !this._rateCooldown.isCooling()) {
+                        // console.error("ACTION - slowing down!")
 
-                    this._videoObject.playbackRate = 0.9;
-                    this._rateCooldown.triggerCooldown();
+                        if (this._debug)
+                            this._logger.decoratedLog("Playback Speed: 0.9", "dark-green");
+
+                        this._videoObject.playbackRate = 0.9;
+                        this._rateCooldown.triggerCooldown();
+                    }
+
                 }
 
             } else if (NumberUtilities.isNear(currentBufferSize, targetValue, this._targetMargin)) {
@@ -455,19 +468,22 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
                 //console.warn("normal speed!")
 
-                if(this._videoObject.playbackRate != 1.0) {
+                if(this._usePlaybackRateControl) {
 
-                    if(this._debug )
-                        this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
+                    if (this._videoObject.playbackRate != 1.0) {
 
-                    this._videoObject.playbackRate = 1.0;
-                    this._rateCooldown.triggerCooldown();
-                    this._marginEnlargedCount++;
-                    if(this._marginEnlargedCount > 10){
-                        this._marginEnlargedCount = 0;
-                        //this._targetMargin += 0.1;
+                        if (this._debug)
+                            this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
+
+                        this._videoObject.playbackRate = 1.0;
+                        this._rateCooldown.triggerCooldown();
+                        this._marginEnlargedCount++;
+                        if (this._marginEnlargedCount > 10) {
+                            this._marginEnlargedCount = 0;
+                            //this._targetMargin += 0.1;
+                        }
+
                     }
-
                 }
 
             }

@@ -264,8 +264,17 @@ export class ScreenElement {
                 // User odmutowuje - nadpisuje wszystko
                 this._serviceMuted = false;
                 this._browserForcedMute = false;
+
+                if(this._volume == 0){
+                    this._volume = 50;
+                    this._videoElement.volume = 50 / 100;
+                    this._main.getStorageManager()!.saveField("volume", String(this._volume));
+
+                }
             }
+
             this._main.getStorageManager()!.saveField("muted", String(isMuted));
+
         } else {
             // service
             this._serviceMuted = isMuted;

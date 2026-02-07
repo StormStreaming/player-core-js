@@ -44,7 +44,7 @@ player.initialize();
 
 ## Module Formats
 
-Available as **ESM**, **IIFE**, **UMD**, and **CJS**. TypeScript definitions included.
+Available as **ESM**, **IIFE**, **UMD**, **UMD**, and **CJS**. TypeScript definitions included.
 
 ## Documentation
 

@@ -558,14 +558,17 @@ export class StageController {
     public setSize(width: number | string, height: number | string): void {
         this.setDimension('width', width);
         this.setDimension('height', height);
+        this._main?.getQualityController()?.onPlayerResize();
     }
 
     public setWidth(width: number | string): void {
         this.setDimension('width', width);
+        this._main?.getQualityController()?.onPlayerResize();
     }
 
     public setHeight(height: number | string): void {
         this.setDimension('height', height);
+        this._main?.getQualityController()?.onPlayerResize();
     }
 
     public getParentElement():HTMLElement | null {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>StormPlayer Core DEVELOPER PAGE</title>
+  <title>StormPlayer Core - DEVELOPER PAGE</title>
   <script src="../dist/iife/index.js"></script>
 </head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,10 +81,10 @@
       <li>      <div class="selectWrapper">
         <label for="modeList">Mode Switch</label>
         <select id="modeList">
-          <option value="passive">passive</option>
-          <option value="highestQuality">highestQuality</option>
-          <option value="lowestQuality">lowestQuality</option>
-          <option value="resolutionAware" selected>resolutionAware</option>
+          <option value="PASSIVE">PASSIVE</option>
+          <option value="HIGHEST_QUALITY">HIGHEST_QUALITY</option>
+          <option value="LOWEST_QUALITY">LOWEST_QUALITY</option>
+          <option value="RESOLUTION_AWARE" selected>RESOLUTION_AWARE</option>
         </select>
       </div></li>
 
@@ -176,7 +176,7 @@
 
   <div class="toolbox">
     <label>Other</label>
-    <button onclick="functionAppend('getLibraryID: '+storm.getLibraryID());console.log('storm.getLibraryID', storm.getLibraryID())">getLibraryID()</button>
+    <button onclick="functionAppend('getPlayerID: '+storm.getPlayerID());console.log('storm.getPlayerID', storm.getPlayerID())">getPlayerID()</button>
     <button onclick="functionAppend('getVersion: '+storm.getVersion());console.log('storm.getVersion', storm.getVersion())">getVersion()</button>
     <button onclick="storm.destroy()">destroy()</button>
     <button onclick="storm.enterFullScreen()">enterFullScreen()</button>
@@ -201,12 +201,13 @@
     stream: {
       serverList: [                                // list of streaming server, 2nd, 3rd etc. will be used as backup
         {
-          host: "localhost",                     // host or ip to the streaming server
-          application: "live",
+          host: "192.168.10.3",                     // host or ip to the streaming server
+          application: "edge",
           port: 8080,                            // server port
           ssl: false                             // whenever SSL connection should be used or not
         },
       ],
+      streamKey:"alias",
     },
     settings: {
       autoStart: true,
@@ -367,8 +368,6 @@
   const graph2 = storm.createBandwidthGraph("graph2", 50).start();
   const graph3 = storm.createBufferStabilityGraph("graph3", 50).start();
 
-  storm.subscribe("test", true);
-
   function updateQualityList(qualities) {
 
     const qualityList = document.getElementById('qualityList');
@@ -395,7 +394,7 @@
   });
 
   document.getElementById('modeList').addEventListener('change', () => {
-    storm.setQualityControlMode(document.getElementById('modeList').value);
+    storm.setQualityControlMode(document.getElementById('modeList').value, true);
   });
 
 

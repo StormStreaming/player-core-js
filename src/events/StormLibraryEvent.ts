@@ -188,6 +188,7 @@ export interface StormLibraryEvent {
      * This event is triggered when the video size is changed or updated
      */
     "resizeUpdate": {ref:StormPlayerCore, width:number, height:number};
+    
 
     /**
      * This event is fired when the video source is downgraded due to bandwidth limitations

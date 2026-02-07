@@ -1,6 +1,6 @@
 {
   "name": "@stormstreaming/player-core",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "description": "Core playback engine for Storm Streaming Server & Cloud. Headless, low-latency, no UI — designed for custom player implementations.",
   "author": "Web-Anatomy s.c. <contact@web-anatomy.com>",
   "main": "dist/iife/index.js",
@@ -59,9 +59,6 @@
     "build": "npm-run-all -l clean compile cook",
     "cook": "npm-run-all -l cook:prepare cook:minify cook:banner",
     "dev": "cross-env NODE_ENV=development BABEL_ENV=iifeBundled rollup -c -w",
-    "copy:samples": "shx cp -R samples '/Volumes/Dysk 4 Praca i Grafika/WorkGround/Web WorkSpace/StormLibraryDeploy'",
-    "copy:config": "shx cp {CHANGELOG.md,README.md,package.json} '/Volumes/Dysk 4 Praca i Grafika/WorkGround/Web WorkSpace/StormLibraryDeploy'",
-    "copy:dist": "shx cp -R dist '/Volumes/Dysk 4 Praca i Grafika/WorkGround/Web WorkSpace/StormLibraryDeploy'",
     "copy": "npm-run-all copy:samples copy:config copy:dist",
     "prepare": "npm run build",
     "deploy:prepare": "node scripts/create-deploy.js",

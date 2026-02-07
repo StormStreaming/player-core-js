@@ -116,7 +116,7 @@ export class QualityController {
         this._main.addEventListener("playbackProgress", this.onProgressEvent, false);
         this._main.addEventListener("sourceDowngrade", this.downgradeSourceItem, false);
         this._main.addEventListener("sourceListUpdate", this.createQualityList, false);
-        this._main.addEventListener("resizeUpdate", debounce(() => { this.onLibraryResize() }, 2000, { leading: false, trailing: true }), false);
+        this._main.addEventListener("resizeUpdate", () => { this.onPlayerResize(); }, false);
 
         this._preselectedResolution = Number(this._main.getStorageManager()?.getField("preselectedResolution"));
         if (this._preselectedResolution == 0)
@@ -356,6 +356,7 @@ export class QualityController {
                 if (this._debug) {
                     this._logger.decoratedLog(`Quality Mode: HIGHEST_QUALITY`, "dark-yellow");
                 }
+
                 selected = this.selectHighestQualitySource(filteredSources);
                 break;
 
@@ -548,7 +549,7 @@ export class QualityController {
     // EVENTS
     //------------------------------------------------------------------------//
 
-    public onLibraryResize(): void {
+    public onPlayerResize = debounce((): void => {
 
         if (this._qualityControlMode !== QualityControlMode.RESOLUTION_AWARE)
             return;
@@ -596,7 +597,8 @@ export class QualityController {
             this._main.getStageController()?.getScreenElement()?.createBlackBackground();
             this._main?.getPlaybackController()?.createPlayTask(newSource);
         }
-    }
+
+    }, 2000, { leading: false, trailing: true });
 
     private downgradeSourceItem = (event: StormLibraryEvent["sourceDowngrade"]) => {
         this._bandwidthCapValue = event.bandwidthCap;

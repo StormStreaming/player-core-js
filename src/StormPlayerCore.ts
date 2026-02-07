@@ -46,7 +46,7 @@ export class StormPlayerCore extends EventDispatcher {
      * Version of this player.
      * @private
      */
-    readonly PLAYER_VERSION:string = "$version";
+    readonly VERSION:string = "$version";
 
     /**
      * Compile date for this player
@@ -58,7 +58,7 @@ export class StormPlayerCore extends EventDispatcher {
      * Defines from which branch this player comes from e.g. "Main", "Experimental",
      * @private
      */
-    private readonly PLAYER_BRANCH:string = "Experimental"
+    private readonly BRANCH:string = "Experimental"
 
     /**
      * Defines number of player protocol that is required on server-side
@@ -137,9 +137,9 @@ export class StormPlayerCore extends EventDispatcher {
             return;
         }
 
-        if (this.DEV_MODE && !('StormPlayerCoreArray' in window)) {
-            (window as any).StormLibraryArray = [];
-        }(window as any).StormLibraryArray.push(this);
+        if (this.DEV_MODE && !('playerCoreList' in window)) {
+            (window as any).playerCoreList = [];
+        }(window as any).playerCoreList.push(this);
 
         this._playerID = StormPlayerCore.NEXT_PLAYER_ID++;
 
@@ -199,7 +199,7 @@ export class StormPlayerCore extends EventDispatcher {
 
             this._logger.info(this, "Storm Player Core :: Storm Streaming Suite");
             this._logger.info(this, "ID: " + this._playerID);
-            this._logger.info(this, "Version: " + this.PLAYER_VERSION + " | Compile Date: " + this.COMPILE_DATE + " | Branch: " + this.PLAYER_BRANCH);
+            this._logger.info(this, "Version: " + this.VERSION + " | Compile Date: " + this.COMPILE_DATE + " | Branch: " + this.BRANCH);
             this._logger.info(this, "UserCapabilities :: Browser: " + UserCapabilities.getBrowserName() + " " + UserCapabilities.getBrowserVersion());
             this._logger.info(this, "UserCapabilities :: Operating System: " + UserCapabilities.getOS() + " " + UserCapabilities.getOSVersion());
             this._logger.info(this, "UserCapabilities :: isMobile: " + UserCapabilities.isMobile());
@@ -500,9 +500,9 @@ export class StormPlayerCore extends EventDispatcher {
      * @param height can be provided as number or a string with "%" or "px" suffix
      */
     public setSize(width: number | string, height: number | string): void {
-        if (this._initialized)
+        if (this._initialized) {
             this._stageController!.setSize(width, height);
-        else {
+        } else {
 
             const parsedWidth = NumberUtilities.parseValue(width);
             const parsedHeight = NumberUtilities.parseValue(height);
@@ -741,6 +741,13 @@ export class StormPlayerCore extends EventDispatcher {
     }
 
     /**
+     * Returns the ID of this player instance. Each subsequent instance has a higher number.
+     */
+    public getPlayerID():number {
+        return this._playerID;
+    }
+
+    /**
      * Returns logger (internal)
      */
     public getLogger():Logger {
@@ -800,7 +807,7 @@ export class StormPlayerCore extends EventDispatcher {
      * Returns the version of this player instance. The version is returned in the SemVer format (Major.Minor.Patch).
      */
     public getVersion():string {
-        return this.PLAYER_VERSION
+        return this.VERSION
     }
 
     /**
@@ -814,7 +821,7 @@ export class StormPlayerCore extends EventDispatcher {
      * Returns the development branch of this player (e.g., main, experimental).
      */
     public getBranch():string {
-        return this.PLAYER_BRANCH
+        return this.BRANCH
     }
 
     /**
@@ -845,6 +852,7 @@ export class StormPlayerCore extends EventDispatcher {
      * @param forceReload
      */
     public setQualityControlMode(qualityControlMode:QualityControlMode, forceReload:boolean = false){
+        console.log(qualityControlMode, forceReload);
         this._qualityController?.setQualityControlMode(qualityControlMode, forceReload);
     }
 

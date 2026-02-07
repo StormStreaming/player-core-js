@@ -286,7 +286,7 @@ export class NetworkController {
 
                         } else {
                             this._logger.error(this, `Application ${packet.name} requires token for authentication and no token was provided! Disconnecting!`);
-                            this._main.dispatchEvent("authorizationError", {ref: this._main, reason: "No token can be provided"});
+                            this._main.dispatchEvent("authorizationError", {ref: this._main, reason: "No token has been provided"});
                             this._connection.disconnect();
                         }
 
@@ -406,91 +406,89 @@ export class NetworkController {
                     const packet: PlayResultPacket = jsonObj.data as PlayResultPacket;
                     const origStreamKey: string | null = this._main.getConfigManager()?.getStreamData().streamKey ?? null;
 
+                    if (origStreamKey != packet.streamKey) {
+                        this._logger.error(this, "Play result denied, requested streamKey: \"" + origStreamKey + "\" | packet: " + packet.streamKey);
+                        return;
+                    }
+
                     if (packet.status == "success") {
 
-                        if (origStreamKey != packet.streamKey) {
-                            this._logger.error(this, "Play result denied, requested streamKey: \"" + origStreamKey + "\" | packet: " + packet.streamKey);
-                            return;
+                        switch (packet.streamState) {
+
+                            case "PUBLISHED":
+
+                                this._logger.success(this, `Playback initialized! StreamKey: ${packet.streamKey}`);
+                                this._main.dispatchEvent("playbackInitiate", {
+                                    ref: this._main,
+                                    streamKey: packet.streamKey
+                                });
+
+                                break;
+                            case "AWAITING":
+
+                                this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
+                                this._main.getPlaybackController()?.setStreamState(StreamState.AWAITING, packet.streamKey);
+
+                                this._logger.info(this, "Stream is not ready yet (state: AWAITING)");
+
+                                break;
+                            case "NOT_PUBLISHED":
+
+                                this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
+                                this._main.getPlaybackController()?.setStreamState(StreamState.NOT_PUBLISHED, packet.streamKey);
+
+                                break;
+                            case "UNPUBLISHED":
+
+                                this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
+                                this._main.getPlaybackController()?.setStreamState(StreamState.UNPUBLISHED, packet.streamKey);
+
+                                this._logger.info(this, "Stream is not ready yet (state: UNPUBLISHED")
+
+                                break;
+
+                            case "INITIALIZED":
+
+                                this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
+                                this._main.getPlaybackController()?.setStreamState(StreamState.INITIALIZED, packet.streamKey);
+
+                                this._logger.info(this, "Stream is not ready yet (state: INITIALIZED/UNPUBLISHED")
+
+                                break;
                         }
 
-                        if (packet.status == "success") {
+                    } else {
 
-                            switch (packet.streamState) {
+                        switch (packet.reason) {
+                            case "NOT_FOUND":
 
-                                case "PUBLISHED":
+                                this._logger.info(this, "Stream not found")
+                                this._main.dispatchEvent("streamNotFound", {
+                                    ref: this._main,
+                                    streamKey: packet.streamKey
+                                });
 
-                                    this._logger.success(this, `Playback initialized! StreamKey: ${packet.streamKey}`);
-                                    this._main.dispatchEvent("playbackInitiate", {
-                                        ref: this._main,
-                                        streamKey: packet.streamKey
-                                    });
+                                this._main.getPlaybackController()?.setStreamState(StreamState.NOT_FOUND, packet.streamKey);
 
-                                    break;
-                                case "AWAITING":
-
-                                    this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
-                                    this._main.getPlaybackController()?.setStreamState(StreamState.AWAITING, packet.streamKey);
-
-                                    this._logger.info(this, "Stream is not ready yet (state: AWAITING)");
-
-                                    break;
-                                case "NOT_PUBLISHED":
-
-                                    this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
-                                    this._main.getPlaybackController()?.setStreamState(StreamState.NOT_PUBLISHED, packet.streamKey);
-
-                                    break;
-                                case "UNPUBLISHED":
-
-                                    this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
-                                    this._main.getPlaybackController()?.setStreamState(StreamState.UNPUBLISHED, packet.streamKey);
-
-                                    this._logger.info(this, "Stream is not ready yet (state: UNPUBLISHED")
-
-                                    break;
-
-                                case "INITIALIZED":
-
-                                    this._main.getPlaybackController()?.setPlaybackState(PlaybackState.STOPPED);
-                                    this._main.getPlaybackController()?.setStreamState(StreamState.INITIALIZED, packet.streamKey);
-
-                                    this._logger.info(this, "Stream is not ready yet (state: INITIALIZED/UNPUBLISHED")
-
-                                    break;
-                            }
-
-                        } else {
-
-                            switch (packet.reason) {
-                                case "NOT_FOUND":
-
-                                    this._logger.info(this, "Stream not found")
-                                    this._main.dispatchEvent("streamNotFound", {
-                                        ref: this._main,
-                                        streamKey: packet.streamKey
-                                    });
-
-                                    this._main.getPlaybackController()?.setStreamState(StreamState.NOT_FOUND, packet.streamKey);
-
-                                    break;
-                                case "Incorrect streamKey":
-                                    this._logger.info(this, "Stream not found (incorrect streamKey)")
-                                    this._main.dispatchEvent("streamNotFound", {
-                                        ref: this._main,
-                                        streamKey: packet.streamKey
-                                    });
-                                    break;
-                                case "Maximum viewers reached":
-                                    this._logger.info(this, "Maximum viewers reached")
-                                    this._main.dispatchEvent("viewerLimitReached", {
-                                        ref: this._main,
-                                        streamKey: packet.streamKey
-                                    });
-                                    break;
-                            }
-
+                                break;
+                            case "Incorrect streamKey":
+                                this._logger.info(this, "Stream not found (incorrect streamKey)")
+                                this._main.dispatchEvent("streamNotFound", {
+                                    ref: this._main,
+                                    streamKey: packet.streamKey
+                                });
+                                break;
+                            case "Maximum viewers reached":
+                                this._logger.info(this, "Maximum viewers reached")
+                                this._main.dispatchEvent("viewerLimitReached", {
+                                    ref: this._main,
+                                    streamKey: packet.streamKey
+                                });
+                                break;
                         }
+
                     }
+
                 }
                 break;
                 //-----------------------------------------------------------------------//

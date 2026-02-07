@@ -22,7 +22,7 @@ export class QualityData implements IConfig {
      */
     private _qualityConfig: QualityConfig | null;
 
-    private _qualityControlMode: QualityControlMode = QualityControlMode.PASSIVE;
+    private _qualityControlMode: QualityControlMode = QualityControlMode.RESOLUTION_AWARE;
 
     private _initialUpgradeTimeout: number = 30;
 

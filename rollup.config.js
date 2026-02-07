@@ -117,7 +117,7 @@ export default {
         serve({
             open: true,
             verbose: true,
-            contentBase: ["", "tests"],
+            contentBase: ["", "samples"],
             host: "127.0.0.1",
             port: 8087,
         }),

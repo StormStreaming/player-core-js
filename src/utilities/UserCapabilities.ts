@@ -362,6 +362,9 @@ export class UserCapabilities {
         return codecs;
     }
 
+    public static isIOS(): boolean {
+        return /iPhone|iPad|iPod/.test(navigator.userAgent);
+    }
 
     /**
      * Returns true whenever user is connected via HTTPS

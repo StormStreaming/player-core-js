@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const LOCAL_DIRECTORY = './deploy';
-const S3_DIRECTORY = 'stormlibrary';
+const S3_DIRECTORY = 'player-core';
 
 const s3Config = JSON.parse(fs.readFileSync('./s3.config.json'));
 
