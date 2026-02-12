@@ -306,6 +306,13 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
                     this._videoObject.play().then(() => {
 
+                        if (this._videoObject.buffered.length > 0) {
+                            const firstStart = this._videoObject.buffered.start(0);
+                            if (this._videoObject.currentTime < firstStart) {
+                                this._videoObject.currentTime = firstStart;
+                            }
+                        }
+
                         this._main.getStageController()?.getScreenElement()?.deleteBlackBackground();
                         this._preparingToStart = false;
 
@@ -542,6 +549,14 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
         const currentTime = this._videoObject.currentTime;
         let bufferedTimeLeft = 0;
+
+        // Jeśli currentTime jest przed pierwszym zakresem bufora,
+        // licz od początku bufora (Safari nie przesuwa currentTime automatycznie)
+        const firstStart = this._videoObject.buffered.start(0);
+        if (currentTime < firstStart) {
+            bufferedTimeLeft = this._videoObject.buffered.end(0) - firstStart;
+            return bufferedTimeLeft;
+        }
 
         for (let i = 0; i < this._videoObject.buffered.length; i++) {
             if (this._videoObject.buffered.start(i) <= currentTime && currentTime <= this._videoObject.buffered.end(i)) {

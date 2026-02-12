@@ -129,6 +129,10 @@ export class PlaybackController {
 
     private _prevStreamState:StreamState = StreamState.UNKNOWN;
 
+    private _subscribeGeneration: number = 0;
+
+    private _subscribeDebounceActive: boolean = false;
+
 
     //------------------------------------------------------------------------//
     // CONSTRUCTOR
@@ -289,6 +293,8 @@ export class PlaybackController {
 
         this._selectedSource = null;
 
+        if (this._subscribeDebounceActive) return;
+
         if(this._taskQueue.length > 0) {
             if (this._taskQueue[0].getType() == TaskType.PLAY) {
                 if (this._lastSubscribeTask != null) {
@@ -325,6 +331,8 @@ export class PlaybackController {
 
 
     private onSubscribeComplete = () => {
+
+        if (this._subscribeDebounceActive) return;
 
         this._logger.info(this, "Subscription complete, remaining tasks: "+this._taskQueue.length);
 
@@ -423,39 +431,37 @@ export class PlaybackController {
     // TASK QUEUE
     //------------------------------------------------------------------------//
 
-    public createSubscribeTask(streamKey:string, autoStart:boolean){
+    public createSubscribeTask(streamKey: string, autoStart: boolean) {
 
-        if(this._debug)
-            this._logger.decoratedLog("Subscribe: "+streamKey, "dark-red");
+        if (this._debug)
+            this._logger.decoratedLog("Subscribe: " + streamKey, "dark-red");
 
-        this._logger.info(this, "Creating new subscribe task :: streamKey: "+streamKey+ " | autoStart: "+autoStart+" | lastStreamKey: "+ this._lastStreamKey)
-
-        if(streamKey == this._lastStreamKey) {
-
-            if(this._debug)
-                this._logger.decoratedLog("Aborting Subscribe (already subscribed): "+streamKey, "dark-red");
-
-            this._logger.warning(this, "Already have this subscription, aborting...");
+        if (streamKey == this._lastStreamKey) {
+            if (this._debug)
+                this._logger.decoratedLog("Aborting Subscribe (already subscribed): " + streamKey, "dark-red");
             return;
-        } else {
-            this._lastStreamKey = streamKey;
         }
 
+        this._lastStreamKey = streamKey;
         clearTimeout(this._subscribeCooldown);
 
+        const currentGeneration = ++this._subscribeGeneration;
+        this._subscribeDebounceActive = true;
+
         this._main.getConfigManager()!.getStreamData().streamKey = streamKey;
-        this._logger.info(this, "StreamKey registered: "+streamKey);
 
         this._taskQueue = [];
-        this._taskQueue.push( new SubscribeTask(streamKey));
+        this._taskQueue.push(new SubscribeTask(streamKey));
 
-        if(autoStart)
+        if (autoStart)
             this._taskQueue.push(new PlayTask(streamKey));
 
         this._subscribeCooldown = setTimeout(() => {
-            this.executeTask();
-        }, 30);
-
+            if (currentGeneration === this._subscribeGeneration) {
+                this._subscribeDebounceActive = false;
+                this.executeTask();
+            }
+        }, 100);
     }
 
     public createPauseTask():void {

@@ -559,6 +559,8 @@ export class NetworkController {
                         streamKey:this._currentStreamKey
                     });
 
+
+
                 }
                 break;
                 //-----------------------------------------------------------------------//
@@ -566,9 +568,15 @@ export class NetworkController {
                 //-----------------------------------------------------------------------//
                 case "subscribeUpdate": {
 
-                    const packet:SubscriptionUpdatePacket = jsonObj.data as SubscriptionUpdatePacket;
+                    const packet: SubscriptionUpdatePacket = jsonObj.data as SubscriptionUpdatePacket;
+                    const origStreamKey = this._main.getConfigManager()?.getStreamData().streamKey ?? null;
 
                     const oldStreamState:StreamState = this._main.getStreamState();
+
+                    if (origStreamKey != packet.streamKey) {
+                        this._logger.warning(this, "Subscribe update ignored, stale streamKey: " + packet.streamKey);
+                        return;
+                    }
 
                     this.parseSources(packet);
                     this.updateStreamStatus(packet)

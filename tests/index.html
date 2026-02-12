@@ -201,13 +201,12 @@
     stream: {
       serverList: [                                // list of streaming server, 2nd, 3rd etc. will be used as backup
         {
-          host: "192.168.10.3",                     // host or ip to the streaming server
-          application: "edge",
+          host: "127.0.0.1",                     // host or ip to the streaming server
+          application: "mono",
           port: 8080,                            // server port
           ssl: false                             // whenever SSL connection should be used or not
         },
       ],
-      streamKey:"alias",
     },
     settings: {
       autoStart: true,
@@ -246,6 +245,8 @@
   }
 
   const storm = stormPlayerCore(config);
+
+
 
   storm.addEventListener("streamEnd", function (event) {
     functionAppend(`Library ID: ${event.ref.getLibraryID()} - Stream ended`);
@@ -363,6 +364,18 @@
   })
 
   storm.initialize();
+
+  setTimeout(() => {
+    storm.subscribe('test', true);
+  },50)
+
+  setTimeout(() => {
+    storm.subscribe('dupa', true);
+  },55)
+
+  setTimeout(() => {
+    storm.subscribe('test', true);
+  },160)
 
   const graph1 = storm.createBufferGraph("graph1", 50).start();
   const graph2 = storm.createBandwidthGraph("graph2", 50).start();

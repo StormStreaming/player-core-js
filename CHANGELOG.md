@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.2
+
+- improved subscribe lifecycle: debounce, stale streamKey guards, and retry limits to prevent race conditions during rapid stream switching,
+
+## 1.0.1
+
+- minor fixes related to MSE/MME
+
 ## 1.0.0
 - Initial release (previously known as StormLibrary 5.0.0)
 

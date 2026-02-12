@@ -1,6 +1,6 @@
 {
   "name": "@stormstreaming/player-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Core playback engine for Storm Streaming Server & Cloud. Headless, low-latency, no UI — designed for custom player implementations.",
   "author": "Web-Anatomy s.c. <contact@web-anatomy.com>",
   "main": "dist/iife/index.js",
