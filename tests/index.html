@@ -207,6 +207,7 @@
           ssl: false                             // whenever SSL connection should be used or not
         },
       ],
+      streamKey:"test",
     },
     settings: {
       autoStart: true,
@@ -365,17 +366,7 @@
 
   storm.initialize();
 
-  setTimeout(() => {
-    storm.subscribe('test', true);
-  },50)
 
-  setTimeout(() => {
-    storm.subscribe('dupa', true);
-  },55)
-
-  setTimeout(() => {
-    storm.subscribe('test', true);
-  },160)
 
   const graph1 = storm.createBufferGraph("graph1", 50).start();
   const graph2 = storm.createBandwidthGraph("graph2", 50).start();

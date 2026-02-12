@@ -24,6 +24,7 @@ import {IGraph} from "./graph/IGraph";
 import {QualityControlMode} from "./enum/QualityControlMode";
 import {QualityController} from "./playback/QualityController";
 import {ServerInfo} from "./network/model/ServerInfo";
+import {ScreenElement} from "./stage/ScreenElement";
 
 /**
  * Main class of the player. The player itself has no GUI, but can be controlled via provided API.
@@ -378,6 +379,28 @@ export class StormPlayerCore extends EventDispatcher {
         return this._stageController?.getScreenElement()?.getIfMuted()
             ?? this._configManager.getSettingsData().getAudioData().muted
             ?? false;
+    }
+
+    /**
+     * Returns the source that is currently responsible for the player being muted.
+     * If multiple mute sources are active simultaneously, the method returns the one
+     * with the highest priority: browser > service > user.
+     *
+     * @returns {"none"} - player is not muted
+     * @returns {"browser"} - muted by the browser due to autoplay policy
+     * @returns {"service"} - muted programmatically via service call
+     * @returns {"user"} - muted by user interaction
+     */
+    public getMutedBy(): "none" | "service" | "browser" | "user" {
+        let screen = this.getStageController()?.getScreenElement();
+        if (screen != null) {
+            if (screen.isMutedByBrowser()) return "browser";
+            if (screen.isMutedByService()) return "service";
+            if (screen.isMutedByUser())    return "user";
+        } else if (this._configManager?.getSettingsData().getAudioData().muted) {
+            return "user";  // config-level mute = user intention
+        }
+        return "none";
     }
 
     /**

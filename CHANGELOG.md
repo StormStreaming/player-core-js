@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.1.1
+
+- fixed reference-based source comparison in resize and quality mode handlers, preventing unnecessary stream re-requests when the selected source matched the current one,
+
+## 1.1.0
+
+- new method "getMutedBy()" was added, returns the source responsible for muting the player (browser, service, user, or none),
+
 ## 1.0.3
 
 - fixes related to reconnecting mechanism,

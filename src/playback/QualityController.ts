@@ -592,7 +592,7 @@ export class QualityController {
         }
 
         // Switch source if needed
-        if (newSource != null && newSource !== currentSourceItem) {
+        if (newSource != null && newSource.getStreamKey() !== currentSourceItem?.getStreamKey()) {
             this.updateAutoQualityItem(newSource);
             this._main.getStageController()?.getScreenElement()?.createBlackBackground();
             this._main?.getPlaybackController()?.createPlayTask(newSource);
@@ -936,7 +936,8 @@ export class QualityController {
 
         if (forceReload) {
             const newSource: ISourceItem | null = this.selectSource();
-            if (newSource != null && newSource !== this._main.getPlaybackController()?.getCurrentSourceItem()) {
+            const currentSource = this._main.getPlaybackController()?.getCurrentSourceItem() ?? null;
+            if (newSource != null && newSource.getStreamKey() !== currentSource?.getStreamKey()) {
                 this.updateAutoQualityItem(newSource);
                 this._main.getPlaybackController()?.createPlayTask(newSource);
             }

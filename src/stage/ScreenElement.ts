@@ -296,6 +296,18 @@ export class ScreenElement {
      */
 
 
+    public isMutedByUser():boolean {
+        return this._isMuted;
+    }
+
+    public isMutedByService():boolean {
+        return this._serviceMuted;
+    }
+
+    public isMutedByBrowser():boolean {
+        return this._browserForcedMute;
+    }
+
     public dispatchVolumeEvent(source: "user" | "service" | "browser" = "user"): void {
         this._main.dispatchEvent("volumeChange", {
             ref: this._main,
