@@ -78,6 +78,8 @@ export class AbstractSocket {
 
     protected _isDestroyed:boolean = false;
 
+    private _errorHandled: boolean = false;
+
     /**
      * Creates and starts new socket connection
      *
@@ -86,6 +88,7 @@ export class AbstractSocket {
      */
     public startConnection(): void {
 
+        this._errorHandled = false;
         this._disconnectedByUser = false;
         this._messageCount = 0;
         this._isConnected = false;
@@ -113,25 +116,23 @@ export class AbstractSocket {
             if(this._connectionState == ConnectionState.CONNECTED) {
                 this._connectionState = ConnectionState.CLOSED;
                 this.onSocketClose(event);
-            } else {
+            } else if(this._connectionState == ConnectionState.CONNECTING && !this._errorHandled) {
                 this._connectionState = ConnectionState.FAILED;
+                this._errorHandled = true;
+                this.onSocketError(event);
             }
-
         }
 
         this.socket.onerror = (event) => {
             clearTimeout(this._connectionTimeout);
-            if(this._connectionState == ConnectionState.CONNECTING)
+            if(this._connectionState == ConnectionState.CONNECTING && !this._errorHandled) {
+                this._errorHandled = true;
                 this.onSocketError(event);
-
-            if(this._connectionState == ConnectionState.CONNECTED) {
-                try {
-                    this.socket.close();
-                } catch (error) {
-                    //
-                }
             }
 
+            if(this._connectionState == ConnectionState.CONNECTED) {
+                try { this.socket.close(); } catch(e) {}
+            }
         }
 
         this._connectionTimeout = setTimeout(() =>{
@@ -141,8 +142,9 @@ export class AbstractSocket {
                 //
             }
 
-            if(this._connectionState == ConnectionState.CONNECTING) {
+            if(this._connectionState == ConnectionState.CONNECTING && !this._errorHandled) {
                 this._connectionState = ConnectionState.FAILED;
+                this._errorHandled = true;
                 this.onSocketError(new ErrorEvent("connectionTimeout"));
             }
 

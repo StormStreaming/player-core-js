@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.3
+
+- fixes related to reconnecting mechanism,
+
 ## 1.0.2
 
 - improved subscribe lifecycle: debounce, stale streamKey guards, and retry limits to prevent race conditions during rapid stream switching,
