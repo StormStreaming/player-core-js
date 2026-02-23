@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.2
+
+- fixed intervals not being properly cleaned up when player instance is removed,
+
 ## 1.1.1
 
 - fixed reference-based source comparison in resize and quality mode handlers, preventing unnecessary stream re-requests when the selected source matched the current one,

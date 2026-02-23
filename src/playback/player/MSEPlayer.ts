@@ -304,14 +304,17 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                     this._seekCooldown.triggerCooldown();
                     this._rateCooldown.triggerCooldown();
 
-                    this._videoObject.play().then(() => {
-
-                        if (this._videoObject.buffered.length > 0) {
-                            const firstStart = this._videoObject.buffered.start(0);
-                            if (this._videoObject.currentTime < firstStart) {
-                                this._videoObject.currentTime = firstStart;
-                            }
+                    // Seek BEFORE play() — iOS Safari won't auto-advance
+                    // currentTime to buffered range, causing readyState
+                    // to stay at 1 (HAVE_METADATA) and play() to hang
+                    if (this._videoObject.buffered.length > 0) {
+                        const firstStart = this._videoObject.buffered.start(0);
+                        if (this._videoObject.currentTime < firstStart) {
+                            this._videoObject.currentTime = firstStart;
                         }
+                    }
+
+                    this._videoObject.play().then(() => {
 
                         this._main.getStageController()?.getScreenElement()?.deleteBlackBackground();
                         this._preparingToStart = false;
