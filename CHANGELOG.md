@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.3
+
+- fixed race condition with multiple subscribe requests,
+
 ## 1.1.2
 
 - fixed intervals not being properly cleaned up when player instance is removed,

@@ -448,17 +448,17 @@ export class PlaybackController {
         const currentGeneration = ++this._subscribeGeneration;
         this._subscribeDebounceActive = true;
 
-        this._main.getConfigManager()!.getStreamData().streamKey = streamKey;
-
-        this._taskQueue = [];
-        this._taskQueue.push(new SubscribeTask(streamKey));
-
-        if (autoStart)
-            this._taskQueue.push(new PlayTask(streamKey));
-
         this._subscribeCooldown = setTimeout(() => {
             if (currentGeneration === this._subscribeGeneration) {
                 this._subscribeDebounceActive = false;
+
+                // Dopiero teraz ustawiamy config i budujemy queue
+                this._main.getConfigManager()!.getStreamData().streamKey = streamKey;
+                this._taskQueue = [];
+                this._taskQueue.push(new SubscribeTask(streamKey));
+                if (autoStart)
+                    this._taskQueue.push(new PlayTask(streamKey));
+
                 this.executeTask();
             }
         }, 100);
@@ -500,6 +500,9 @@ export class PlaybackController {
             this._logger.decoratedLog("Unsubscribe", "dark-red");
 
         this._logger.info(this, "Creating Unsubscribe Task")
+
+        clearTimeout(this._subscribeCooldown);
+        this._subscribeDebounceActive = false;
 
         this._lastStreamKey = null;
         this._main.getConfigManager()!.getStreamData().streamKey = null;
