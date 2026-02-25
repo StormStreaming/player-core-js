@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.4
+
+- quality monogram “FH” has been renamed to “FHD” for better clarity,
+
 ## 1.1.3
 
 - fixed race condition with multiple subscribe requests,

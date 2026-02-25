@@ -69,25 +69,26 @@ export class StreamInfo {
     }
 
     public assignMonogram(): void {
-        if(this.width != null && this.height != null) {
 
-            const baseValue = Math.min(this.width, this.height);
+        if (this.width == null || this.height == null) {
+            this.monogram = "UN";
+            return;
+        }
 
-            if(baseValue <= 360) {
-                this.monogram = "LQ";
-            } else if(baseValue <= 480) {
-                this.monogram = "SD";
-            } else if(baseValue <= 720) {
-                this.monogram = "HD";
-            } else if(baseValue <= 1080) {
-                this.monogram = "FH";
-            } else if(baseValue <= 1440) {
-                this.monogram = "2K";
-            } else if(baseValue <= 2160) {
-                this.monogram = "4K";
-            } else {
-                this.monogram = "UN";
-            }
+        const baseValue = Math.min(this.width, this.height);
+
+        if (baseValue <= 360) {
+            this.monogram = "LD";
+        } else if (baseValue <= 480) {
+            this.monogram = "SD";
+        } else if (baseValue <= 720) {
+            this.monogram = "HD";
+        } else if (baseValue <= 1080) {
+            this.monogram = "FHD";
+        } else if (baseValue <= 1440) {
+            this.monogram = "2K";
+        } else if (baseValue <= 2160) {
+            this.monogram = "4K";
         } else {
             this.monogram = "UN";
         }
