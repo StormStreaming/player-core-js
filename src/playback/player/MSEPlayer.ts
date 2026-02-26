@@ -83,7 +83,7 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
      * Main timer
      * @private
      */
-    private _mainTimer:number;
+    private _mainTimer:number | null
 
 
     /**
@@ -128,7 +128,29 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
      */
     private _debug:boolean = false;
 
+    /**
+     * Whether playback rate control is used for buffer regulation
+     * @private
+     */
     private _usePlaybackRateControl: boolean = true;
+
+    /**
+     * Consecutive append errors counter — used for escalated recovery
+     * @private
+     */
+    private _consecutiveAppendErrors: number = 0;
+
+    /**
+     * Maximum allowed consecutive append errors before forced restart
+     * @private
+     */
+    private readonly _maxConsecutiveAppendErrors: number = 3;
+
+    /**
+     * Whether the player is currently in error recovery mode
+     * @private
+     */
+    private _isRecovering: boolean = false;
 
 
     //------------------------------------------------------------------------//
@@ -174,6 +196,7 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         this._main.addEventListener("streamMetadataUpdate", this.onMetaData, false);
         this._main.addEventListener("streamStateChange", this.onStreamStateChange, false);
         this._main.addEventListener("playbackForcePause", this.onForcePause, false);
+        this._main.addEventListener("sourceDowngrade", this.onSourceDowngrade, false);
 
         this._videoObject = this._main.getStageController()!.getScreenElement()!.getVideoElement();
 
@@ -193,6 +216,9 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
             this._logger.decoratedLog("Metadata Arrived", "dark-green");
 
         this.restart();
+
+        this._consecutiveAppendErrors = 0;
+        this._isRecovering = false;
 
         this._mainTimer = setInterval(() => {
             this.timerEvent();
@@ -230,6 +256,11 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                 this.appendSourceBuffer();
             };
 
+            this._sourceBuffer.onerror = () => {
+                this._logger.warning(this, "SourceBuffer error event fired");
+                this.handleMediaError();
+            };
+
         }
     }
 
@@ -241,6 +272,14 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
         if (this._sourceBuffer == null || this._mediaSource == null)
             return;
+
+        if (this._isRecovering)
+            return;
+
+        if (this.isMediaElementInError()) {
+            this.handleMediaError();
+            return;
+        }
 
         if (this._mediaSource.readyState === 'open') {
             if (!this._sourceBuffer.updating) {
@@ -256,12 +295,35 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                 if (this._segmentsQueue.length > 0) {
                     try {
                         this._sourceBuffer.appendBuffer(this._segmentsQueue.shift());
+                        this._consecutiveAppendErrors = 0;
                     } catch (error) {
-                        console.error('Error appending buffer:', error);
+                        this._consecutiveAppendErrors++;
+                        this._logger.warning(this, `Error appending buffer (${this._consecutiveAppendErrors}/${this._maxConsecutiveAppendErrors}): ${error}`);
+
+                        if (this.isMediaElementInError()) {
+                            this.handleMediaError();
+                        } else if (this._consecutiveAppendErrors >= this._maxConsecutiveAppendErrors) {
+                            this._logger.warning(this, "Max consecutive append errors reached — forcing recovery");
+                            this.handleMediaError();
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Called when source quality downgrade is dispatched.
+     * Immediately blocks incoming data and flushes the segment queue
+     * to prevent feeding incompatible segments into the old SourceBuffer.
+     */
+    private onSourceDowngrade = () => {
+
+        if(this._debug)
+            this._logger.decoratedLog("Source downgrade — blocking pipeline", "dark-green");
+
+        this._acceptVideoData = false;
+        this._segmentsQueue = [];
     }
 
     /**
@@ -271,6 +333,14 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
         if(this._videoObject === null)
             return;
+
+        if (this._isRecovering)
+            return;
+
+        if (this.isMediaElementInError()) {
+            this.handleMediaError();
+            return;
+        }
 
         this._degradeChargeMeter.markTimestamp();
         this._bandwidthMeter.markTimestamp();
@@ -301,17 +371,13 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                     if(this._debug)
                         this._logger.decoratedLog("Buffering Complete", "dark-green");
 
-                    this._seekCooldown.triggerCooldown();
-                    this._rateCooldown.triggerCooldown();
-
-                    // Seek BEFORE play() — iOS Safari won't auto-advance
-                    // currentTime to buffered range, causing readyState
-                    // to stay at 1 (HAVE_METADATA) and play() to hang
                     if (this._videoObject.buffered.length > 0) {
                         const firstStart = this._videoObject.buffered.start(0);
-                        if (this._videoObject.currentTime < firstStart) {
-                            this._videoObject.currentTime = firstStart;
-                        }
+                        const lastEnd = this._videoObject.buffered.end(
+                            this._videoObject.buffered.length - 1
+                        );
+                        const liveEdgePosition = lastEnd - targetValue;
+                        this._videoObject.currentTime = Math.max(firstStart, liveEdgePosition);
                     }
 
                     this._videoObject.play().then(() => {
@@ -354,8 +420,6 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
             if (currentBufferSize < minValue) {
 
-                //console.warn("buffer is empty, stoping for buffering")
-
                 /*
                             M   S  [ T ]   X
                     --------================++++++++++
@@ -379,12 +443,10 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                                             ^
                 */
 
-                //console.warn("OVER MAX - way, way too fast!")
-
                 const bufferedEnd = this._videoObject.buffered.end(this._videoObject.buffered.length - 1);
                 const targetPosition = bufferedEnd - targetValue;
 
-                let validPosition = targetPosition;
+                let validPosition: number | null = null;
                 for (let i = 0; i < this._videoObject.buffered.length; i++) {
                     const start = this._videoObject.buffered.start(i);
                     const end = this._videoObject.buffered.end(i);
@@ -393,6 +455,13 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                         validPosition = targetPosition;
                         break;
                     }
+                }
+
+                if (validPosition === null) {
+                    validPosition = Math.max(
+                        this._videoObject.buffered.start(0),
+                        bufferedEnd - targetValue
+                    );
                 }
 
                 if(this._debug )
@@ -411,8 +480,6 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                   --------================++++++++++
                                        ^
                 */
-
-                //console.warn("OVER TARGET - buffer increasing!")
 
                 if(this._usePlaybackRateControl) {
 
@@ -443,12 +510,9 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                                ^
                  */
 
-                //console.warn("BELOW TARGET - too slow!")
-
                 if(this._usePlaybackRateControl) {
 
                     if (this._videoObject.playbackRate == 1.1) {
-                        // console.error("ACTION - normalize!")
                         if (this._debug)
                             this._logger.decoratedLog("Playback Speed: 1.0", "dark-green");
 
@@ -457,7 +521,6 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                     }
 
                     if (this._videoObject.playbackRate == 1.0 && !this._rateCooldown.isCooling()) {
-                        // console.error("ACTION - slowing down!")
 
                         if (this._debug)
                             this._logger.decoratedLog("Playback Speed: 0.9", "dark-green");
@@ -475,8 +538,6 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
                 --------================++++++++++
                                  ^
                 */
-
-                //console.warn("normal speed!")
 
                 if(this._usePlaybackRateControl) {
 
@@ -553,8 +614,8 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         const currentTime = this._videoObject.currentTime;
         let bufferedTimeLeft = 0;
 
-        // Jeśli currentTime jest przed pierwszym zakresem bufora,
-        // licz od początku bufora (Safari nie przesuwa currentTime automatycznie)
+        // If currentTime is before the first buffer range,
+        // count from the buffer start (Safari doesn't auto-advance currentTime)
         const firstStart = this._videoObject.buffered.start(0);
         if (currentTime < firstStart) {
             bufferedTimeLeft = this._videoObject.buffered.end(0) - firstStart;
@@ -595,7 +656,12 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
      */
     public feedRawData(data:ArrayBuffer):void {
 
-        if(!this._acceptVideoData) {
+        if(!this._acceptVideoData || this._isRecovering) {
+            return;
+        }
+
+        if (this.isMediaElementInError()) {
+            this.handleMediaError();
             return;
         }
 
@@ -607,6 +673,54 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
         this._segmentsQueue.push(data);
         this.appendSourceBuffer();
+
+    }
+
+    //------------------------------------------------------------------------//
+    // ERROR HANDLING
+    //------------------------------------------------------------------------//
+
+    /**
+     * Checks whether the HTMLMediaElement is in an error state
+     * @private
+     */
+    private isMediaElementInError(): boolean {
+        return this._videoObject != null && this._videoObject.error != null;
+    }
+
+    /**
+     * Centralized media error handler.
+     * Blocks data pipeline, logs diagnostics, resets error counters
+     * and dispatches a restart-ready state so new metadata can reinitialize cleanly.
+     * @private
+     */
+    private handleMediaError(): void {
+
+        if (this._isRecovering)
+            return;
+
+        this._isRecovering = true;
+        this._acceptVideoData = false;
+        this._segmentsQueue = [];
+
+        const errorCode = this._videoObject?.error?.code ?? -1;
+        const errorMessage = this._videoObject?.error?.message ?? "unknown";
+
+        this._logger.warning(this, `Media element error detected — code: ${errorCode}, message: "${errorMessage}". Initiating recovery.`);
+
+        if (this._debug)
+            this._logger.decoratedLog(`Media Error Recovery [code=${errorCode}]`, "dark-green");
+
+        //this._main.dispatchEvent("playerError", {
+            //ref: this._main,
+            //errorCode: errorCode,
+            //errorMessage: errorMessage
+        //});
+
+        this.restart();
+
+        this._consecutiveAppendErrors = 0;
+        this._isRecovering = false;
 
     }
 
@@ -651,7 +765,7 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
     }
 
     /**
-     * Metoda czyszcząca bufor na żądanie
+     * Flushes old buffer data on demand
      * @private
      */
     private flushVideoCache():void {
@@ -685,9 +799,23 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
      */
     private restart():void {
 
+        this._acceptVideoData = false;
+        this._segmentsQueue = [];
+
+        if(this._mainTimer != null) {
+            clearInterval(this._mainTimer);
+            this._mainTimer = null;
+        }
+
         if (this._sourceBuffer && this._mediaSource) {
+            this._sourceBuffer.onerror = null;
+
             if (this._sourceBuffer.updating) {
-                this._sourceBuffer.abort();
+                try {
+                    this._sourceBuffer.abort();
+                } catch(e) {
+                    this._logger.warning(this, `Error aborting source buffer: ${e}`);
+                }
             }
 
             try {
@@ -701,12 +829,20 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         }
 
         if (this._mediaSource && this._mediaSource.readyState === 'open') {
-            this._mediaSource.duration = 0;
+            try {
+                this._mediaSource.duration = 0;
+            } catch(e) {
+                // MediaSource may already be in an unusable state
+            }
         }
 
         if (this._mediaSource) {
             if (this._mediaSource.readyState === 'open') {
-                this._mediaSource.endOfStream();
+                try {
+                    this._mediaSource.endOfStream();
+                } catch(e) {
+                    // Silently handle — MSE may already be closed/errored
+                }
             }
             this._mediaSource.onsourceopen = null;
             this._mediaSource = null;
@@ -723,13 +859,14 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         this._bufferEndTime = 0;
         this._dataPacketCount = 0;
         this._totalBytesReceived = 0;
-        this._segmentsQueue = [];
-        this._acceptVideoData = false;
+        this._shouldFlushData = false;
         this._seekCooldown.reset();
+        this._rateCooldown.reset();
         this._bufferAnalyser.reset();
         this._bandwidthMeter.reset();
         this._degradeChargeMeter.reset();
-        this._bitrateCooldown.reset()
+        this._bitrateCooldown.reset();
+        this._consecutiveAppendErrors = 0;
 
     }
 
@@ -739,6 +876,7 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
     public clear():void {
 
         this._acceptVideoData = false;
+        this._isRecovering = false;
 
         if (this._videoObject)
             this._videoObject.pause();
@@ -749,8 +887,14 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
         }
 
         if (this._sourceBuffer && this._mediaSource) {
+            this._sourceBuffer.onerror = null;
+
             if (this._sourceBuffer.updating) {
-                this._sourceBuffer.abort();
+                try {
+                    this._sourceBuffer.abort();
+                } catch(e) {
+                    // ignore
+                }
             }
             try {
                 this._mediaSource.removeSourceBuffer(this._sourceBuffer);
@@ -762,18 +906,27 @@ export class MSEPlayer extends AbstractPlayer implements IPlayer {
 
         if (this._mediaSource) {
             if (this._mediaSource.readyState === 'open') {
-                this._mediaSource.endOfStream();
+                try {
+                    this._mediaSource.endOfStream();
+                } catch(e) {
+                    // ignore
+                }
             }
             this._mediaSource = null;
         }
 
-        if(this._mainTimer != null)
+        if(this._mainTimer != null) {
             clearInterval(this._mainTimer);
+            this._mainTimer = null;
+        }
+
+        this._main.removeEventListener("sourceDowngrade", this.onSourceDowngrade);
 
         this._seekCooldown.reset();
         this._rateCooldown.reset();
 
-        this._videoObject.playbackRate = 1.0;
+        if (this._videoObject)
+            this._videoObject.playbackRate = 1.0;
 
     }
 

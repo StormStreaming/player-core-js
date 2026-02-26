@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.5
+
+- minor bug-fixes for MSE error handling, 
+
 ## 1.1.4
 
 - quality monogram “FH” has been renamed to “FHD” for better clarity,

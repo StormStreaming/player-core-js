@@ -503,12 +503,13 @@ export class QualityController {
     }
 
     public playQualityItemByID(id: number): boolean {
+
         const sourceItemList: Array<ISourceItem> = this._main.getConfigManager()?.getStreamData().getSourceList() ?? [];
         let selectedQuality: QualityItem | null = null;
 
         // Update selection state
         for (const item of this._qualityItemList) {
-            if (item.id === id) {
+            if (item.id == id) {
                 selectedQuality = item;
                 item.isSelected = true;
             } else {
